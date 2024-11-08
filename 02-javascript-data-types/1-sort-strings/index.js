@@ -5,17 +5,14 @@
  * @returns {string[]}
  */
 export function sortStrings(arr, param = "asc") {
-  if (param !== "asc" && param !== "desc") {
-    throw new Error("Должно быть 'asc' или 'desc'");
-  }
   return arr.slice().sort((a, b) => {
     if (param === "asc") {
-      return a.localeCompare(b, undefined, {
+      return a.localeCompare(b, "ru", {
         sensitivity: "variant",
         caseFirst: "upper",
       });
-    } else {
-      return b.localeCompare(a, undefined, {
+    } else if (param === "desc") {
+      return b.localeCompare(a, "ru", {
         sensitivity: "variant",
         caseFirst: "upper",
       });

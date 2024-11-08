@@ -9,6 +9,7 @@ export const omit = (obj, ...fields) => {
     if (!fields.includes(key)) {
       newPick[key] = value;
     }
+    
     return newPick;
   }, {});
 };

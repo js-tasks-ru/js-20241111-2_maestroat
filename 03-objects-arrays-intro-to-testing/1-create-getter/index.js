@@ -7,7 +7,7 @@ export function createGetter(path) {
   const fields = path.split('.');
   return function (product) {
     return fields.reduce((acc, key) => {
-      if (acc && Object.prototype.hasOwnProperty.call(acc, key)) {
+      if (acc && product.hasOwnProperty.call(acc, key)) {
         return acc[key];
       }
       return undefined;

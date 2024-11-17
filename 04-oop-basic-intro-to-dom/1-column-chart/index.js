@@ -1,4 +1,5 @@
 export default class ColumnChart {
+  chartHeight = 50;
   constructor(parameters = {}) {
     const {
       data = [],
@@ -13,7 +14,6 @@ export default class ColumnChart {
     this.link = link;
     this.formatHeading = formatHeading;
     this.element = this.createElement(this.createTemplate());
-    this.chartHeight = 50;
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -27,7 +27,7 @@ export default class ColumnChart {
     return `<a href="${this.link}" class="column-chart__link">View all</a>`;
   }
   createTemplate() {
-    return `<div class="column-chart ${!this.data.length ? "column-chart_loading" : ""}" style="--chart-height: 50">
+    return `<div class="column-chart ${!this.data.length ? "column-chart_loading" : ""}" style="--chart-height: ${this.chartHeight}">
       <div class="column-chart__title">
         ${this.label}
         ${this.createLink()}

@@ -24,23 +24,20 @@ export default class NotificationMessage {
     `;
   }
   show(target = document.body) {
-    if (NotificationMessage.value === null) {
-      NotificationMessage.value = this.element;
-      target.appendChild(this.element);
-      this.timer();
-    } else {
-      NotificationMessage.value.remove();
-      target.appendChild(this.element);
-      NotificationMessage.value = this.element;
-      this.timer();
+    if (NotificationMessage.value) {
+      NotificationMessage.value.destroy();
+      console.log(NotificationMessage.value);
     }
+    NotificationMessage.value = this;
+
+    target.appendChild(this.element);
+    this.timer();
   }
   remove() {
     this.element.remove();
   }
   destroy() {
     this.remove();
-    NotificationMessage.value = null;
   }
   timer() {
     setTimeout(() => {

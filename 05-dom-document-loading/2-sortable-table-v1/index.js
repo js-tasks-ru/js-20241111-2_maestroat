@@ -5,8 +5,8 @@ export default class SortableTable {
     this.element = this.createElement(this.template());
   }
   static value = null;
-  static fieldValueCheck = "title";
-  static orderValueCheck = "asc";
+  static fieldValueCheck = "title"; //проверка на повторное нажатие кнопки
+  static orderValueCheck = "asc"; //проверка на повторное нажатие кнопки
 
   createElement(html) {
     const div = document.createElement("div");

@@ -65,15 +65,15 @@ export default class SortableTable {
   }
   sort(fieldValue, orderValue) {
     if (this.fieldValueCheck === fieldValue && this.orderValueCheck === orderValue) {
-      return;
+      return; //проверка на повторное нажатие
     }
     else {
       this.fieldValueCheck = fieldValue;
       this.orderValueCheck = orderValue;
     }
     this.config.forEach((columnConfig) => {
-      if (fieldValue && columnConfig["sortable"] !== "false" && fieldValue === columnConfig.id && orderValue) {
-        if (columnConfig.sortType === "string") {
+      if (fieldValue && columnConfig["sortable"] !== "false" && fieldValue === columnConfig["id"] && orderValue) {
+        if (columnConfig["sortType"] === "string") {
           this.sortString(fieldValue, orderValue);
         } else {
           this.sortNumber(fieldValue, orderValue);

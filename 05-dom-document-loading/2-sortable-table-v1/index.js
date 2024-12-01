@@ -1,17 +1,25 @@
 export default class SortableTable {
+  subElements = {};
   constructor(config = [], data = []) {
     this.config = config;
     this.data = data;
     this.element = this.createElement(this.template());
+    this.selectSubElements();
   }
-  static value = null;
-  static fieldValueCheck = "title"; //проверка на повторное нажатие кнопки
-  static orderValueCheck = "asc"; //проверка на повторное нажатие кнопки
+
+  fieldValueCheck = "title";
+  orderValueCheck = "asc";
 
   createElement(html) {
     const div = document.createElement("div");
     div.innerHTML = html;
     return div.firstElementChild;
+  }
+
+  selectSubElements() {
+    this.element.querySelectorAll("[data-element]").forEach((element) => {
+      this.subElements[element.dataset.element] = element;
+    });
   }
   createTableHeaderTemplate() {
     return this.config
@@ -64,54 +72,57 @@ export default class SortableTable {
       .join("");
   }
   sort(fieldValue, orderValue) {
-    if (this.fieldValueCheck === fieldValue && this.orderValueCheck === orderValue) {
-      return; //проверка на повторное нажатие
-    }
-    else {
-      this.fieldValueCheck = fieldValue;
-      this.orderValueCheck = orderValue;
-    }
+    // console.log(this.fieldValueCheck);
+    // console.log(this.orderValueCheck);
+
+    // if (
+    //   this.fieldValueCheck === fieldValue &&
+    //   this.orderValueCheck === orderValue
+    // ) {
+    //   return; //проверка на повторное нажатие
+    // } else {
+    //   this.fieldValueCheck = fieldValue;
+    //   this.orderValueCheck = orderValue;
+    // }
     this.config.forEach((columnConfig) => {
-      if (fieldValue && columnConfig["sortable"] !== "false" && fieldValue === columnConfig["id"] && orderValue) {
+      if (
+        fieldValue &&
+        columnConfig["sortable"] !== "false" &&
+        fieldValue === columnConfig["id"] &&
+        orderValue
+      ) {
         if (columnConfig["sortType"] === "string") {
           this.sortString(fieldValue, orderValue);
         } else {
           this.sortNumber(fieldValue, orderValue);
         }
-        // console.log(this.data);
-        // this.remove();
-        // this.element = this.createElement(this.template());
-        // const root = document.querySelector("#root");
-        // if (root) {
-        //   root.append(this.element);
-        // }
-        const table = document.querySelector('[data-element="body"]');
-        SortableTable.value = this.createTableBodyTemplate();
-        table.innerHTML = SortableTable.value;
+        // console.log(this.subElements.body);
+        this.subElements.body.innerHTML = this.createTableBodyTemplate();
       }
     });
   }
-  sortString(param, orderValue) {
+
+  sortString(fieldValue, orderValue) {
     this.data = this.data.slice().sort((a, b) => {
       if (orderValue === "asc") {
-        return a[param].localeCompare(b[param], "ru", {
+        return a[fieldValue].localeCompare(b[fieldValue], "ru", {
           sensitivity: "variant",
           caseFirst: "upper",
         });
       } else if (orderValue === "desc") {
-        return b[param].localeCompare(a[param], "ru", {
+        return b[fieldValue].localeCompare(a[fieldValue], "ru", {
           sensitivity: "variant",
           caseFirst: "upper",
         });
       }
     });
   }
-  sortNumber(param, orderValue) {
+  sortNumber(fieldValue, orderValue) {
     this.data = this.data.slice().sort((a, b) => {
       if (orderValue === "asc") {
-        return a[param] - b[param];
+        return a[fieldValue] - b[fieldValue];
       } else if (orderValue === "desc") {
-        return b[param] - a[param];
+        return b[fieldValue] - a[fieldValue];
       }
     });
   }

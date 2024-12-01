@@ -26,7 +26,6 @@ export default class NotificationMessage {
   show(target = document.body) {
     if (NotificationMessage.value) {
       NotificationMessage.value.destroy();
-      console.log(NotificationMessage.value);
     }
     NotificationMessage.value = this;
 

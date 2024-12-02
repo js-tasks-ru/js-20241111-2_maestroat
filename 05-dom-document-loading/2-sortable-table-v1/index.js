@@ -36,14 +36,8 @@ export default class SortableTable {
 
   createTableBodyCellTemplate(product, columnConfig) {
     const fieldId = columnConfig["id"];
-    if (fieldId === "images") {
-      return `
-      <div class="sortable-table__cell">
-        <img class="sortable-table-image" alt="Image" src="${
-          product[fieldId][0]?.url || "https://via.placeholder.com/32"
-}">
-      </div>
-    `;
+    if (columnConfig["template"]) {
+      return columnConfig["template"](product[fieldId]);
     } else {
       return `<div class="sortable-table__cell">${product[fieldId]}</div>`;
     }

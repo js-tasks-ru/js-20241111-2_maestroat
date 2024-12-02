@@ -7,9 +7,6 @@ export default class SortableTable {
     this.selectSubElements();
   }
 
-  fieldValueCheck = "title";
-  orderValueCheck = "asc";
-
   createElement(html) {
     const div = document.createElement("div");
     div.innerHTML = html;
@@ -27,10 +24,9 @@ export default class SortableTable {
         (columnConfig) =>
           `
           <div class="sortable-table__cell" data-id="${
-            columnConfig["id"]
-          }" data-sortable="${
-            columnConfig["id"] === "images" ? "false" : "true"
-          }" data-order="asc">
+  columnConfig["id"]
+}" data-sortable="${
+  columnConfig["sortable"]}">
             <span>${columnConfig["id"]}</span>
         </div>
         `
@@ -41,12 +37,11 @@ export default class SortableTable {
   createTableBodyCellTemplate(product, columnConfig) {
     const fieldId = columnConfig["id"];
     if (fieldId === "images") {
-      // console.log(product[fieldId][0]?.url);
       return `
       <div class="sortable-table__cell">
         <img class="sortable-table-image" alt="Image" src="${
           product[fieldId][0]?.url || "https://via.placeholder.com/32"
-        }">
+}">
       </div>
     `;
     } else {
@@ -72,18 +67,6 @@ export default class SortableTable {
       .join("");
   }
   sort(fieldValue, orderValue) {
-    // console.log(this.fieldValueCheck);
-    // console.log(this.orderValueCheck);
-
-    // if (
-    //   this.fieldValueCheck === fieldValue &&
-    //   this.orderValueCheck === orderValue
-    // ) {
-    //   return; //проверка на повторное нажатие
-    // } else {
-    //   this.fieldValueCheck = fieldValue;
-    //   this.orderValueCheck = orderValue;
-    // }
     this.config.forEach((columnConfig) => {
       if (
         fieldValue &&
@@ -92,18 +75,17 @@ export default class SortableTable {
         orderValue
       ) {
         if (columnConfig["sortType"] === "string") {
-          this.sortString(fieldValue, orderValue);
+          this.data = this.sortString(this.data, fieldValue, orderValue);
         } else {
-          this.sortNumber(fieldValue, orderValue);
+          this.data = this.sortNumber(this.data, fieldValue, orderValue);
         }
-        // console.log(this.subElements.body);
         this.subElements.body.innerHTML = this.createTableBodyTemplate();
       }
     });
   }
 
-  sortString(fieldValue, orderValue) {
-    this.data = this.data.slice().sort((a, b) => {
+  sortString(data, fieldValue, orderValue) {
+    return data.slice().sort((a, b) => {
       if (orderValue === "asc") {
         return a[fieldValue].localeCompare(b[fieldValue], "ru", {
           sensitivity: "variant",
@@ -117,8 +99,8 @@ export default class SortableTable {
       }
     });
   }
-  sortNumber(fieldValue, orderValue) {
-    this.data = this.data.slice().sort((a, b) => {
+  sortNumber(data, fieldValue, orderValue) {
+    return data.slice().sort((a, b) => {
       if (orderValue === "asc") {
         return a[fieldValue] - b[fieldValue];
       } else if (orderValue === "desc") {

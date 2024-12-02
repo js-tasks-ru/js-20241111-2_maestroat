@@ -37,7 +37,7 @@ export default class SortableTable {
   createTableBodyCellTemplate(product, columnConfig) {
     const fieldId = columnConfig["id"];
     if (columnConfig["template"]) {
-      return columnConfig["template"](product[fieldId]);
+      return columnConfig["template"](product["images"]);
     } else {
       return `<div class="sortable-table__cell">${product[fieldId]}</div>`;
     }

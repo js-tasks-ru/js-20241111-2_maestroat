@@ -18,6 +18,7 @@ export default class SortableTable {
       this.subElements[element.dataset.element] = element;
     });
   }
+  
   createTableHeaderTemplate() {
     return this.config
       .map(
@@ -60,6 +61,7 @@ export default class SortableTable {
       .map((product) => this.createTableBodyRowTemplate(product))
       .join("");
   }
+
   sort(fieldValue, orderValue) {
     this.config.forEach((columnConfig) => {
       if (
@@ -93,6 +95,7 @@ export default class SortableTable {
       }
     });
   }
+
   sortNumber(data, fieldValue, orderValue) {
     return data.slice().sort((a, b) => {
       if (orderValue === "asc") {
@@ -122,9 +125,11 @@ export default class SortableTable {
         </div>
     `;
   }
+
   remove() {
     this.element.remove();
   }
+
   destroy() {
     this.remove();
   }

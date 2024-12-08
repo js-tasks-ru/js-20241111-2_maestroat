@@ -13,7 +13,7 @@ class Tooltip {
     return div.firstElementChild;
   }
   template() {
-    return `<div class="tooltip""></div>`;
+    return `<div class="tooltip"></div>`;
   }
   initialize() {
     document.addEventListener("pointermove", (e) => this.handlePointerMove(e));

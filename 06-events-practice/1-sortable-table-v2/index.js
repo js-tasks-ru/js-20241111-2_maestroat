@@ -6,24 +6,9 @@ export default class SortableTableV2 extends SortableTable {
     this.config = headersConfig;
     this.data = data;
     this.isSortLocally = sorted;
-    this.element = this.createElement(super.template());
-    this.subElements = {};
-    this.selectSubElements();
     this.createListeners();
     this.arrowElement = this.createArrowElement();
     this.beginSotring();
-  }
-
-  createElement(html) {
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    return div.firstElementChild;
-  }
-
-  selectSubElements() {
-    this.element.querySelectorAll("[data-element]").forEach((element) => {
-      this.subElements[element.dataset.element] = element;
-    });
   }
 
   createArrowElement() {
@@ -38,7 +23,7 @@ export default class SortableTableV2 extends SortableTable {
       </span>`;
   }
 
-  handleHeaderPointerDown(element) {
+  createArrowInHeaderCell(element) {
     element.appendChild(this.arrowElement);
   }
 
@@ -47,41 +32,24 @@ export default class SortableTableV2 extends SortableTable {
     if (!cellElement) {
       return;
     }
-    // @TODO: sortable property data-sortable is not empty
     if (cellElement.dataset.sortable === "false") {
       return;
     }
-    if (cellElement.dataset.id === "title") {
-      cellElement.querySelector('[data-element="arrow"]')?.remove();
-    }
-
-    this.handleHeaderPointerDown(cellElement);
 
     const sortField = cellElement.dataset.id;
-    let sortOrder = cellElement.dataset.order; // @TODO:
+    let sortOrder = cellElement.dataset.order;
 
     if (sortOrder === "asc") {
       sortOrder = "desc";
-    } else {
+    } else if (sortOrder === "desc") {
       sortOrder = "asc";
     }
     cellElement.dataset.order = sortOrder;
-
+    this.createArrowInHeaderCell(cellElement);
     this.sort(sortField, sortOrder);
   };
 
-  sort(sortField, sortOrder, status) {
-    // «пользовательская» сортировка по статусу заказа
-    if (status === 1) {
-      this.data = data.slice().filter((el) => el["status"] === 1);
-      this.subElements.body.innerHTML = super.createTableBodyTemplate();
-    } else {
-      if (status === 0) {
-        this.data = data.slice().filter((el) => el["status"] === 0);
-        this.subElements.body.innerHTML = super.createTableBodyTemplate();
-      }
-    }
-
+  sort(sortField, sortOrder) {
     if (this.isSortLocally) {
       this.sortOnClient(sortField, sortOrder);
     } else {
@@ -90,22 +58,29 @@ export default class SortableTableV2 extends SortableTable {
   }
 
   beginSotring() {
-    const el = this.subElements.header.querySelector('[data-id="title"]');
-    el.innerHTML = el.innerHTML + this.createArrowTemplate();
-    el.dataset.order = "asc";
-    this.sort(el.dataset.id, "asc");
+    const els = this.subElements.header.querySelectorAll(
+      ".sortable-table__cell"
+    );
+    els.forEach((el) => {
+      el.dataset.order = "asc";
+      if (el.dataset.id === "title") {
+        this.createArrowInHeaderCell(el);
+        this.sort(el.dataset.id, "asc");
+      }
+    });
+
   }
 
   createListeners() {
     this.subElements.header.addEventListener(
-      "click",
+      "pointerdown",
       this.handleHeaderCellClick
     );
   }
 
   destroyListeners() {
     this.subElements.header.removeEventListener(
-      "click",
+      "pointerdown",
       this.handleHeaderCellClick
     );
   }

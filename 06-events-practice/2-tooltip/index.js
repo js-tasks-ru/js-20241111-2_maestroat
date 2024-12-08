@@ -30,20 +30,19 @@ class Tooltip {
     this.foo.addEventListener("pointerover", this.onMouseMove.bind(this));
     this.foo.addEventListener("pointerout", this.remove());
     this.bar.addEventListener("pointerover", this.onMouseMove.bind(this));
-    this.bar.addEventListener("pointerout",this.remove());
+    this.bar.addEventListener("pointerout", this.remove());
   }
 
   destroyListeners() {
-    this.foo.addEventListener("pointerover", this.onMouseMove.bind(this));
-    this.foo.addEventListener("pointerout", this.remove());
-    this.bar.addEventListener("pointerover", this.onMouseMove.bind(this));
-    this.bar.addEventListener("pointerout", this.remove());
+    this.foo.removeEventListener("pointerover", this.onMouseMove.bind(this));
+    this.foo.removeEventListener("pointerout", this.remove());
+    this.bar.removeEventListener("pointerover", this.onMouseMove.bind(this));
+    this.bar.removeEventListener("pointerout", this.remove());
   }
   remove() {
     this.element.remove();
   }
   destroy() {
-    super.destroy();
     this.destroyListeners();
   }
 }

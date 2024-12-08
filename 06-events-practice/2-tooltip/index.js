@@ -1,9 +1,11 @@
 class Tooltip {
+  static instance;
   constructor() {
+    if (Tooltip.instance) {
+      return Tooltip.instance;
+    }
+    Tooltip.instance = this;
     this.element = this.createElement(this.template());
-    this.foo = document.querySelector('[data-tooltip="foo"]');
-    this.bar = document.querySelector('[data-tooltip="bar-bar-bar"]');
-    this.createListeners();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -13,31 +15,44 @@ class Tooltip {
   template() {
     return `<div class="tooltip""></div>`;
   }
-  initialize() {}
+  initialize() {
+    document.addEventListener("pointermove", (e) => this.handlePointerMove(e));
+    document.addEventListener("pointerover", (e) => this.handlePointerOver(e));
+    document.addEventListener("pointerout", (e) => this.handlePointerOut(e));
+  }
 
-  onMouseMove(e) {
-    // console.log(e.pageX, e.pageY);
-    let text = e.target.dataset.tooltip;
+  handlePointerOver(e) {
+    let text = e.target.getAttribute("data-tooltip");
+    if (text === null) {
+      return;
+    }
+    this.render(text);
+  }
+  handlePointerOut() {
+    if (this.element === null) {
+      return;
+    }
+    this.remove();
+  }
+  handlePointerMove(e) {
+    if (this.element === null) {
+      return;
+    }
+    let text = e.target.getAttribute("data-tooltip");
+    if (text === null) {
+      return;
+    }
+    this.element.style.left = e.pageX + "px";
+    this.element.style.top = e.pageY + "px";
+  }
+  destroyListeners() {
+    document.removeEventListener("pointermove", this.handlePointerMove);
+    document.removeEventListener("pointerover", this.handlePointerOver);
+    document.removeEventListener("pointerout", this.handlePointerOut);
+  }
+  render(text) {
     document.body.append(this.element);
     this.element.innerHTML = text;
-    this.moveAt(e.pageX, e.pageY);
-  }
-  moveAt(pageX, pageY) {
-    this.element.style.left = pageX + "px";
-    this.element.style.top = pageY + "px";
-  }
-  createListeners() {
-    this.foo.addEventListener("pointerover", this.onMouseMove.bind(this));
-    this.foo.addEventListener("pointerout", this.remove());
-    this.bar.addEventListener("pointerover", this.onMouseMove.bind(this));
-    this.bar.addEventListener("pointerout", this.remove());
-  }
-
-  destroyListeners() {
-    this.foo.removeEventListener("pointerover", this.onMouseMove.bind(this));
-    this.foo.removeEventListener("pointerout", this.remove());
-    this.bar.removeEventListener("pointerover", this.onMouseMove.bind(this));
-    this.bar.removeEventListener("pointerout", this.remove());
   }
   remove() {
     this.element.remove();

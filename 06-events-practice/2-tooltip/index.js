@@ -6,6 +6,9 @@ class Tooltip {
     }
     Tooltip.instance = this;
     this.element = this.createElement(this.template());
+    this.handlePointerMove = this.handlePointerMove.bind(this);
+    this.handlePointerOver = this.handlePointerOver.bind(this);
+    this.handlePointerOut = this.handlePointerOut.bind(this);
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -16,9 +19,9 @@ class Tooltip {
     return `<div class="tooltip"></div>`;
   }
   initialize() {
-    document.addEventListener("pointermove", (e) => this.handlePointerMove(e));
-    document.addEventListener("pointerover", (e) => this.handlePointerOver(e));
-    document.addEventListener("pointerout", (e) => this.handlePointerOut(e));
+    document.addEventListener("pointermove", this.handlePointerMove);
+    document.addEventListener("pointerover", this.handlePointerOver);
+    document.addEventListener("pointerout", this.handlePointerOut);
   }
 
   handlePointerOver(e) {

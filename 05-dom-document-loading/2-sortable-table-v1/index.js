@@ -18,15 +18,13 @@ export default class SortableTable {
       this.subElements[element.dataset.element] = element;
     });
   }
+
   createTableHeaderTemplate() {
     return this.config
       .map(
         (columnConfig) =>
           `
-          <div class="sortable-table__cell" data-id="${
-  columnConfig["id"]
-}" data-sortable="${
-  columnConfig["sortable"]}">
+          <div class="sortable-table__cell" data-id="${columnConfig["id"]}" data-sortable="${columnConfig["sortable"]}">
             <span>${columnConfig["id"]}</span>
         </div>
         `
@@ -60,6 +58,7 @@ export default class SortableTable {
       .map((product) => this.createTableBodyRowTemplate(product))
       .join("");
   }
+
   sort(fieldValue, orderValue) {
     this.config.forEach((columnConfig) => {
       if (
@@ -71,7 +70,9 @@ export default class SortableTable {
         if (columnConfig["sortType"] === "string") {
           this.data = this.sortString(this.data, fieldValue, orderValue);
         } else {
-          this.data = this.sortNumber(this.data, fieldValue, orderValue);
+          if (columnConfig["sortType"] === "number") {
+            this.data = this.sortNumber(this.data, fieldValue, orderValue);
+          }
         }
         this.subElements.body.innerHTML = this.createTableBodyTemplate();
       }
@@ -81,18 +82,19 @@ export default class SortableTable {
   sortString(data, fieldValue, orderValue) {
     return data.slice().sort((a, b) => {
       if (orderValue === "asc") {
-        return a[fieldValue].localeCompare(b[fieldValue], "ru", {
+        return a[fieldValue].localeCompare(b[fieldValue], ["ru", "en"], {
           sensitivity: "variant",
           caseFirst: "upper",
         });
       } else if (orderValue === "desc") {
-        return b[fieldValue].localeCompare(a[fieldValue], "ru", {
+        return b[fieldValue].localeCompare(a[fieldValue], ["ru", "en"], {
           sensitivity: "variant",
           caseFirst: "upper",
         });
       }
     });
   }
+
   sortNumber(data, fieldValue, orderValue) {
     return data.slice().sort((a, b) => {
       if (orderValue === "asc") {
@@ -122,9 +124,11 @@ export default class SortableTable {
         </div>
     `;
   }
+
   remove() {
     this.element.remove();
   }
+
   destroy() {
     this.remove();
   }

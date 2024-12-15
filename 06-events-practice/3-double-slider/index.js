@@ -140,11 +140,11 @@ export default class DoubleSlider {
     this.element.dispatchEvent(customEvent);
   }
   destroyListeners() {
-    this.subElements.thumbLeft.addEventListener(
+    this.subElements.thumbLeft.removeEventListener(
       "pointerdown",
       this.handleThumPointerdown
     );
-    this.subElements.thumbRight.addEventListener(
+    this.subElements.thumbRight.removeEventListener(
       "pointerdown",
       this.handleThumPointerdown
     );

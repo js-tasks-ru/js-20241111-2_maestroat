@@ -2,10 +2,16 @@ import fetchJson from "./utils/fetch-json.js";
 import SortableTableV2 from "../../04-oop-basic-intro-to-dom/1-column-chart/index.js";
 const BACKEND_URL = "https://course-js.javascript.ru";
 export default class ColumnChart extends SortableTableV2 {
-  constructor(parameters, otherParameters = {}) {
+  constructor({
+    parameters = {},
+    url = "",
+    range = {},
+    label = "",
+    link = "",
+    formatHeading = (data) => data,
+  }) {
     super(parameters);
-    const { data = [], value = 0, formatHeading = (data) => data } = parameters;
-    const { url = "", range = {}, label = "", link = "" } = otherParameters;
+    const { data = [], value = 0 } = parameters;
     this.data = data;
     this.label = label;
     this.value = value;
@@ -14,10 +20,9 @@ export default class ColumnChart extends SortableTableV2 {
     this.from = range.from ?? null;
     this.to = range.to ?? null;
     this.formatHeading = formatHeading;
+    this.createLink = super.createLink();
     this.subElements = {};
     this.selectSubElements();
-    this.createBodyChart = super.createBodyChart.bind(this);
-
     this.fetchData();
   }
   selectSubElements() {
@@ -28,20 +33,24 @@ export default class ColumnChart extends SortableTableV2 {
   async fetchData() {
     try {
       const response = await fetch(this.createUrl());
-      const data = await response.json();
-
-      this.data = data;
-      this.subElements.body = this.createBodyTemplate();
+      const ordersData = await response.json();
+      // console.log(this.data);
+      this.data = Object.values(ordersData);
+      this.subElements.body.innerHTML = this.createBodyChart();
+      let sum = this.data.reduce((sum, el) => sum + el, 0);
+      this.subElements.header.textContent = this.formatHeading(sum);
+      this.element.classList.remove("column-chart_loading");
+      let str = this.label + this.createLink;
+      this.element.firstElementChild.innerHTML = str.trim();
     } catch (err) {
-      // @TODO
+      const url = new URL(this.url, BACKEND_URL);
+      fetchJson(url);
     }
   }
   createUrl() {
-    console.log(this.otherParameters); //undefined - почему??
-
     const url = new URL(this.url, BACKEND_URL);
-    url.searchParams.append("from", this.from);
-    url.searchParams.append("to", this.to);
+    url.searchParams.append("from", this.from.toISOString());
+    url.searchParams.append("to", this.to.toISOString());
 
     if (this.value < 100) {
       url.searchParams.append("price", "low");
@@ -49,13 +58,34 @@ export default class ColumnChart extends SortableTableV2 {
 
     return url.toString();
   }
+  createBodyChart() {
+    return this.getColumnProps(this.data)
+      .map(
+        ({ percent, value }) =>
+          `<div style="--value: ${value}" data-tooltip="${percent}"></div>`
+      )
+      .join("");
+  }
+  getColumnProps(data) {
+    const maxValue = Math.max(...data);
+    const scale = 50 / maxValue;
+
+    return data.map((item) => {
+      return {
+        percent: ((item / maxValue) * 100).toFixed(0) + "%",
+        value: String(Math.floor(item * scale)),
+      };
+    });
+  }
   update(dateStart, dateEnd) {
     this.from = dateStart;
     this.to = dateEnd;
     this.fetchData();
   }
-  createBodyTemplate() {
-    console.log(ok);
-    return this.createBodyChart();
+  remove() {
+    this.element.remove();
+  }
+  destroy() {
+    this.remove();
   }
 }

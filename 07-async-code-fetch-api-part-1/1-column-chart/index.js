@@ -1,17 +1,18 @@
 import fetchJson from "./utils/fetch-json.js";
-import SortableTableV2 from "../../04-oop-basic-intro-to-dom/1-column-chart/index.js";
+import ColumnChartV1 from "../../04-oop-basic-intro-to-dom/1-column-chart/index.js";
 const BACKEND_URL = "https://course-js.javascript.ru";
-export default class ColumnChart extends SortableTableV2 {
+export default class ColumnChart extends ColumnChartV1 {
+  chartHeight = 50;
   constructor({
-    parameters = {},
     url = "",
     range = {},
     label = "",
     link = "",
     formatHeading = (data) => data,
-  }) {
-    super(parameters);
-    const { data = [], value = 0 } = parameters;
+    data = [],
+    value = 0,
+  } = {}) {
+    super();
     this.data = data;
     this.label = label;
     this.value = value;
@@ -24,6 +25,8 @@ export default class ColumnChart extends SortableTableV2 {
     this.subElements = {};
     this.selectSubElements();
     this.fetchData();
+    this.createBodyChart = super.createBodyChart.bind(this);
+    this.getColumnProps = super.getColumnProps.bind(this);
   }
   selectSubElements() {
     this.element.querySelectorAll("[data-element]").forEach((element) => {
@@ -31,18 +34,23 @@ export default class ColumnChart extends SortableTableV2 {
     });
   }
   async fetchData() {
+    let labelLink = () => {
+      let str = this.label + this.createLink;
+      this.element.firstElementChild.innerHTML = str.trim();
+    };
+    labelLink();
     try {
       const response = await fetch(this.createUrl());
-      const ordersData = await response.json();
-      // console.log(this.data);
-      this.data = Object.values(ordersData);
+      const data = await response.json();
+      this.data = Object.values(data);
       this.subElements.body.innerHTML = this.createBodyChart();
       let sum = this.data.reduce((sum, el) => sum + el, 0);
       this.subElements.header.textContent = this.formatHeading(sum);
       this.element.classList.remove("column-chart_loading");
-      let str = this.label + this.createLink;
-      this.element.firstElementChild.innerHTML = str.trim();
+      labelLink();
+      return data;
     } catch (err) {
+      this.element.classList.add("column-chart_loading");
       const url = new URL(this.url, BACKEND_URL);
       fetchJson(url);
     }
@@ -58,29 +66,10 @@ export default class ColumnChart extends SortableTableV2 {
 
     return url.toString();
   }
-  createBodyChart() {
-    return this.getColumnProps(this.data)
-      .map(
-        ({ percent, value }) =>
-          `<div style="--value: ${value}" data-tooltip="${percent}"></div>`
-      )
-      .join("");
-  }
-  getColumnProps(data) {
-    const maxValue = Math.max(...data);
-    const scale = 50 / maxValue;
-
-    return data.map((item) => {
-      return {
-        percent: ((item / maxValue) * 100).toFixed(0) + "%",
-        value: String(Math.floor(item * scale)),
-      };
-    });
-  }
-  update(dateStart, dateEnd) {
+  async update(dateStart, dateEnd) {
     this.from = dateStart;
     this.to = dateEnd;
-    this.fetchData();
+    return await this.fetchData();
   }
   remove() {
     this.element.remove();

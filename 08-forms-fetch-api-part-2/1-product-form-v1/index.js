@@ -95,7 +95,7 @@ export default class ProductForm {
       for (let category of data) {
         for (let child of category.subcategories) {
           const el = `${category.title} \u003e ${child.title}`;
-          // const el = escapeHtml(category.title + " > " + child.title);
+          // const el = category.title + " > " + child.title;
           const newOption = new Option(el, child.id);
           this.subElements.productForm.elements.subcategory.append(newOption);
         }
@@ -146,6 +146,7 @@ export default class ProductForm {
         this.createElement(`<ul class="sortable-list">${images}</ul>`)
       );
     }
+    return this.element;
   }
   createUrl() {
     const products = "/api/rest/products/";
@@ -170,6 +171,9 @@ export default class ProductForm {
   }
   sendForm = async (e) => {
     e.preventDefault();
+    this.save();
+  };
+  save = async () => {
     try {
       const body = this.getFormData();
       const url = this.createUrl();
@@ -180,17 +184,18 @@ export default class ProductForm {
         },
         body: JSON.stringify(body),
       });
+
       const result = await response.json();
       // console.log(result);
       const dispatch = this.productId
-        ? new CustomEvent("product-saved", {detail: result.id})
-        : new CustomEvent("product-updated", {detail: result.id});
+        ? new CustomEvent("product-updated", {detail: result.id})
+        : new CustomEvent("product-saved", {detail: result.id});
       this.element.dispatchEvent(dispatch);
 
     } catch (err) {
       console.log(err);
     }
-  };
+  }
   getFormData() {
     const {
       title: t,
@@ -204,8 +209,8 @@ export default class ProductForm {
 
     return {
       id: this.productId,
-      title: t.value,
-      description: i.value,
+      title: escapeHtml(t.value),
+      description: escapeHtml(i.value),
       subcategory: s.value,
       price: parseInt(r.value, 10),
       quantity: parseInt(n.value, 10),
@@ -277,7 +282,6 @@ export default class ProductForm {
           </button></li>
         `;
   }
-
   remove() {
     this.element.remove();
   }

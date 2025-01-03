@@ -9,9 +9,6 @@ const BACKEND_URL = "https://course-js.javascript.ru/";
 
 export default class Page {
   constructor() {
-    this.rangePicker = null;
-    this.sortableTable = null;
-    this.columnChart = null;
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
     this.selectSubElements();
@@ -19,8 +16,12 @@ export default class Page {
       from: new Date(),
       to: new Date(),
     };
+    this.rangePicker = null;
+    this.columnChartOrders = this.columnChartOrdersCreate();
+    this.columnChartSales = this.columnChartSalesCreate();
+    this.columnChartCustomers = this.columnChartCustomersCreate();
+    this.dateSelect = false;
     this.createListeners();
-    this.url = "";
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -55,59 +56,77 @@ export default class Page {
   }
   async render() {
     this.subElements.rangePicker.innerHTML = "";
-    this.subElements.ordersChart.innerHTML = "";
-    this.subElements.salesChart.innerHTML = "";
-    this.subElements.customersChart.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
     this.rangePicker = new RangePicker();
     this.subElements.rangePicker.append(this.rangePicker.element);
 
-    this.url = "api/dashboard/orders";
-    this.columnChart = new ColumnChart({
-      url: this.url,
+    if (!this.dateSelect) {
+      this.subElements.ordersChart.append(this.columnChartOrders.element);
+      this.subElements.salesChart.append(this.columnChartSales.element);
+      this.subElements.customersChart.append(this.columnChartCustomers.element);
+      this.subElements.sortableTable.append(this.sortableTableCreate("api/dashboard/bestsellers").element);
+    } else {
+      this.columnChartOrders.update(this.range.from, this.range.to);
+      this.columnChartSales.update(this.range.from, this.range.to);
+      this.columnChartCustomers.update(this.range.from, this.range.to);
+
+      const url = await this.updateUrl();
+      this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
+    }
+
+    return this.element;
+  }
+  async updateUrl() {
+    const url = new URL("api/dashboard/bestsellers", BACKEND_URL);
+    url.searchParams.append("from", this.range.from.toISOString());
+    url.searchParams.append("to", this.range.to.toISOString());
+
+    return url;
+  }
+  columnChartOrdersCreate() {
+    return new ColumnChart({
+      url: "api/dashboard/orders",
       range: this.range,
       link: "#",
       label: "orders",
       formatHeading: (data) => data.toLocaleString(),
     });
-    this.subElements.ordersChart.append(this.columnChart.element);
-
-    this.url = "api/dashboard/sales";
-    this.columnChart = new ColumnChart({
-      url: this.url,
+  }
+  columnChartSalesCreate() {
+    return new ColumnChart({
+      url: "api/dashboard/sales",
       range: this.range,
       label: "sales",
       formatHeading: (data) => data.toLocaleString(),
     });
-    this.subElements.salesChart.append(this.columnChart.element);
-
-    this.url = "api/dashboard/customers";
-    this.columnChart = new ColumnChart({
-      url: this.url,
+  }
+  columnChartCustomersCreate() {
+    return new ColumnChart({
+      url: "api/dashboard/customers",
       range: this.range,
       label: "customers",
       formatHeading: (data) => data.toLocaleString(),
     });
-    this.subElements.customersChart.append(this.columnChart.element);
-
-    this.url = "api/dashboard/bestsellers";
-    this.sortableTable = new SortableTable(header, {
-      url: this.url,
+  }
+  sortableTableCreate(url) {
+    return new SortableTable(header, {
+      url: url,
       isSortLocally: true,
     });
-    this.subElements.sortableTable.append(this.sortableTable.element);
-
-    return this.element;
   }
   createListeners() {
-    this.element.addEventListener("date-select", this.thisDetails);
+    this.element.addEventListener("date-select", this.onRangePickerDateSelect);
   }
   destroyListeners() {
-    this.element.removeEventListener("date-select", this.thisDetails);
+    this.element.removeEventListener(
+      "date-select",
+      this.onRangePickerDateSelect
+    );
   }
-  thisDetails = (e) => {
+  onRangePickerDateSelect = (e) => {
     this.range = e.detail;
+    this.dateSelect = true;
     this.render();
   };
   remove() {
@@ -116,4 +135,5 @@ export default class Page {
   destroy() {
     this.remove();
   }
+
 }

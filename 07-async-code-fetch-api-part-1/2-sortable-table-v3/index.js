@@ -28,14 +28,15 @@ export default class SortableTableV3 extends SortableTableV2 {
     this.step = step;
     this.start = start;
     this.end = end;
+    
     this.render();
   }
   async render() {
     const { id, order } = this.sorted;
     this.data = await this.loadData(id, order, this.start, this.end);
-
-    super.sort(id, order);
+    this.subElements.body.innerHTML = super.createTableBodyTemplate();
     this.initEventListeners();
+    // console.log(this.subElements.body);
   }
   async sortOnServer(id, order) {
     this.data = await this.loadData(id, order, 1, 1 + this.step);

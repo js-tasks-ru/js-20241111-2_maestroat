@@ -28,19 +28,19 @@ export default class SortableTableV3 extends SortableTableV2 {
     this.step = step;
     this.start = start;
     this.end = end;
-    
+
     this.render();
   }
   async render() {
     const { id, order } = this.sorted;
     this.data = await this.loadData(id, order, this.start, this.end);
-    this.subElements.body.innerHTML = super.createTableBodyTemplate();
+    this.subElements.body.innerHTML = this.createTableBodyTemplate();
     this.initEventListeners();
     // console.log(this.subElements.body);
   }
   async sortOnServer(id, order) {
     this.data = await this.loadData(id, order, 1, 1 + this.step);
-    this.subElements.body.innerHTML = super.createTableBodyTemplate();
+    this.subElements.body.innerHTML = this.createTableBodyTemplate();
   }
   async loadData(id, order, start, end) {
     const url = new URL(this.url, BACKEND_URL);
@@ -56,10 +56,8 @@ export default class SortableTableV3 extends SortableTableV2 {
 
     if (!data || 0 === data.length) {
       this.element.classList.add("sortable-table_empty");
-      return (this.element.innerHTML =
-        '<div>Нет данных</div>');
-    }
-    else {
+      return (this.element.innerHTML = "<div>Нет данных</div>");
+    } else {
       this.element.classList.remove("sortable-table_empty");
     }
     this.element.classList.remove("sortable-table_loading");
@@ -72,45 +70,35 @@ export default class SortableTableV3 extends SortableTableV2 {
   onWindowScroll = async () => {
     const { bottom } = this.element.getBoundingClientRect();
     const { id, order } = this.sorted;
-    if (
-      bottom < document.documentElement.clientHeight &&
-      !this.loading &&
-      this.isSortLocally
-    ) {
+    // console.log(bottom);
+    // console.log(document.documentElement.clientHeight);
+    if (bottom < document.documentElement.clientHeight && !this.loading) {
       this.loading = true;
       this.start = this.end;
       this.end = this.start + this.step;
-      this.loading = true;
       const data = await this.loadData(id, order, this.start, this.end);
-
-      this.headersConfig.forEach((columnConfig) => {
-        if (
-          id &&
-          columnConfig["sortable"] !== "false" &&
-          id === columnConfig["id"] &&
-          order
-        ) {
-          if (columnConfig["sortType"] === "string") {
-            data = this.sortString(data, id, order);
-          } else {
-            if (columnConfig["sortType"] === "number") {
-              data = this.sortNumber(data, id, order);
+      if (this.isSortLocally) {
+        this.headersConfig.forEach((columnConfig) => {
+          if (
+            id &&
+            columnConfig["sortable"] !== "false" &&
+            id === columnConfig["id"] &&
+            order
+          ) {
+            if (columnConfig["sortType"] === "string") {
+              data = this.sortString(data, id, order);
+            } else {
+              if (columnConfig["sortType"] === "number") {
+                data = this.sortNumber(data, id, order);
+              }
             }
+            this.update(data);
           }
-          this.update(data);
-          this.loading = false;
-        }
-      });
-    }
-    if (bottom < document.documentElement.clientHeight &&
-      !this.loading && !this.isSortLocally) {
-      this.start = this.end;
-      this.end = this.start + this.step;
-      this.loading = true;
-      const data = await this.loadData(id, order, this.start, this.end);
-      // console.log(bottom);
-      // console.log(document.documentElement.clientHeight);
-      this.update(data);
+        });
+      }
+      if (!this.isSortLocally) {
+        this.update(data);
+      }
       this.loading = false;
     }
   };
@@ -118,14 +106,13 @@ export default class SortableTableV3 extends SortableTableV2 {
     const rows = document.createElement("div");
 
     this.data = [...this.data, ...data];
-    rows.innerHTML = super.createTableBodyTemplate();
+    rows.innerHTML = this.createTableBodyTemplate();
 
     this.subElements.body.append(...rows.childNodes);
   }
   destroyListeners() {
     document.removeEventListener("scroll", this.onWindowScroll);
   }
-
   destroy() {
     super.destroy();
     this.destroyListeners();

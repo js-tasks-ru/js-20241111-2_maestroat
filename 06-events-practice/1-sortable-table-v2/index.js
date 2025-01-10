@@ -53,7 +53,7 @@ export default class SortableTableV2 extends SortableTable {
     if (this.isSortLocally) {
       this.sortOnClient(sortField, sortOrder);
     } else {
-      this.sortOnServer();
+      this.sortOnServer(sortField, sortOrder);
     }
   }
 

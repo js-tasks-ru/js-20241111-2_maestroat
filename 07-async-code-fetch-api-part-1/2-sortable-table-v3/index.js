@@ -36,7 +36,6 @@ export default class SortableTableV3 extends SortableTableV2 {
     this.data = await this.loadData(id, order, this.start, this.end);
     this.subElements.body.innerHTML = this.createTableBodyTemplate();
     this.initEventListeners();
-    // console.log(this.subElements.body);
   }
   async sortOnServer(id, order) {
     this.data = await this.loadData(id, order, 1, 1 + this.step);
@@ -70,8 +69,6 @@ export default class SortableTableV3 extends SortableTableV2 {
   onWindowScroll = async () => {
     const { bottom } = this.element.getBoundingClientRect();
     const { id, order } = this.sorted;
-    // console.log(bottom);
-    // console.log(document.documentElement.clientHeight);
     if (bottom < document.documentElement.clientHeight && !this.loading) {
       this.loading = true;
       this.start = this.end;
@@ -105,7 +102,7 @@ export default class SortableTableV3 extends SortableTableV2 {
   update(data) {
     const rows = document.createElement("div");
 
-    this.data = [...this.data, ...data];
+    this.data = data;
     rows.innerHTML = this.createTableBodyTemplate();
 
     this.subElements.body.append(...rows.childNodes);

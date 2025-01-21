@@ -25,9 +25,7 @@ export default class SortableList {
       .join("");
   }
   createListener() {
-    this.element.childNodes.forEach((el) =>
-      el.addEventListener("pointerdown", this.onElementMove)
-    );
+    this.element.addEventListener("pointerdown", this.onElementMove);
   }
   onElementMove = (event) => {
     let el = event.target.closest(".sortable-list__item");
@@ -44,7 +42,6 @@ export default class SortableList {
     e.remove();
   }
   dragStart(el, { clientX: t, clientY: i }) {
-    this.elementInitialIndex = [...this.element.children].indexOf(el);
     this.pointerInitialShift = {
       x: t - el.getBoundingClientRect().x,
       y: i - el.getBoundingClientRect().y,
@@ -68,34 +65,25 @@ export default class SortableList {
     this.draggingElem.style.top = t - this.pointerInitialShift.y + "px";
   }
   onDocumentPointerMove = (e) => {
-    if (
-      e.clientY < this.element.firstElementChild.getBoundingClientRect().top
-    ) {
+    this.moveDraggingAt(e.clientX, e.clientY);
+    if (e.clientY < this.element.firstElementChild.getBoundingClientRect().top)
       this.movePlaceholderAt(0);
-    } else if (
-      e.clientY > this.element.lastElementChild.getBoundingClientRect().bottom
-    ) {
+    else if (e.clientY > this.element.lastElementChild.getBoundingClientRect().bottom)
       this.movePlaceholderAt(this.element.children.length);
-    } else {
+    else
       for (let t = 0; t < this.element.children.length; t++) {
         let i = this.element.children[t];
-        if (
-          i !== this.draggingElem &&
-          e.clientY > i.getBoundingClientRect().top &&
-          e.clientY < i.getBoundingClientRect().bottom
-        ) {
+        if (i !== this.draggingElem && (e.clientY > i.getBoundingClientRect().top && e.clientY < i.getBoundingClientRect().bottom)) {
           if (e.clientY < i.getBoundingClientRect().top + i.offsetHeight / 2) {
             this.movePlaceholderAt(t);
-            break;
+            break
           }
           this.movePlaceholderAt(t + 1);
-          break;
+          break
         }
       }
-    }
   };
   movePlaceholderAt = (e) => {
-    // eslint-disable-next-line no-unused-expressions
     this.element.children[e] !== this.placeholderElem &&
       this.element.insertBefore(this.placeholderElem, this.element.children[e]);
   };

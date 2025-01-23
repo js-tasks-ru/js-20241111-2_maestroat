@@ -4,7 +4,6 @@ export default class SortableList {
     this.element = this.createElement(this.template());
     this.draggingElem = null;
     this.placeholderElem = null;
-    this.elementInitialIndex = null;
     this.pointerInitialShift = null;
     this.createListener();
   }
@@ -20,7 +19,7 @@ export default class SortableList {
     return this.items.items
       .map(
         (item) =>
-          `<li class="sortable-list__item">${item.innerHTML}</li>`
+          `<li class="sortable-list__item products-edit__imagelist-item">${item.innerHTML}</li>`
       )
       .join("");
   }

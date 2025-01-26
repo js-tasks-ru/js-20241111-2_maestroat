@@ -1,6 +1,10 @@
 import SortableList from '../2-sortable-list/index.js';
-import ProductForm from '../../08-forms-fetch-api-part-2/1-product-form-v1/index.js'
+import ProductForm from '../../08-forms-fetch-api-part-2/1-product-form-v1/index.js';
 
+import escapeHtml from "./utils/escape-html.js";
+import fetchJson from "./utils/fetch-json.js";
+
+const url = "https://course-js.javascript.ru/api/rest/categories?_sort=weight&_refs=subcategory";
 export default class ProductFormV2 extends ProductForm {
   constructor (productId) {
     super();
@@ -8,18 +12,15 @@ export default class ProductFormV2 extends ProductForm {
   }
 
   async render() {
-    const url =
-      "https://course-js.javascript.ru/api/rest/categories?_sort=weight&_refs=subcategory";
-    const response = await fetch(url);
-    const data = await response.json();
+
+    const data = await fetchJson(url);
 
     if (!data) {
       return;
     }
 
     if (this.productId) {
-      const response = await fetch(this.createUrl());
-      const product = await response.json();
+      const product = await fetchJson(this.createUrl());
       if (!product || 0 === product.length) {
         return (this.element.innerHTML =
           '<h1 class="page-title">Страница не найдена</h1>\n<p>Извините, данный товар не существует</p>');
@@ -69,12 +70,12 @@ export default class ProductFormV2 extends ProductForm {
         const element = document.createElement('li');
 
         element.innerHTML = `
-          <input type="hidden" name="url" value="${el.url}">
-          <input type="hidden" name="source" value="${el.source}">
+          <input type="hidden" name="url" value="${escapeHtml(el.url)}">
+          <input type="hidden" name="source" value="${escapeHtml(el.source)}">
           <span>
             <img src="icon-grab.svg" data-grab-handle="" alt="grab">
-            <img class="sortable-table__cell-img" alt="Image" src="${el.url}">
-            <span>${el.source}</span>
+            <img class="sortable-table__cell-img" alt="Image" src="${escapeHtml(el.url)}">
+            <span>${escapeHtml(el.source)}</span>
           </span>
           <button type="button">
             <img src="icon-trash.svg" data-delete-handle="" alt="delete">

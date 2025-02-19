@@ -1,96 +1,95 @@
-import { ContentComponent } from './components.js'
+import { ContentComponent } from "./components.js";
 
 class BasePage {
-    componentMap = {}
-    componentElements = {};
+  componentMap = {};
+  componentElements = {};
 
-    createElement(template) {
-        const element = document.createElement('div');
-        element.innerHTML = template;
-        return element.firstElementChild;
-    }
+  createElement(template) {
+    const element = document.createElement("div");
+    element.innerHTML = template;
+    return element.firstElementChild;
+  }
 
-    createTemplate() {
-        return (`
+  createTemplate() {
+    return `
             <div></div>
-        `);
+        `;
+  }
+
+  selectComponentElements() {
+    const elements = this.element.querySelectorAll("[data-component]");
+
+    for (const element of elements) {
+      const name = element.getAttribute("data-component");
+      this.componentElements[name] = element;
+    }
+  }
+
+  render(container, routeParams) {
+    this.element = this.createElement(this.createTemplate());
+    this.selectComponentElements();
+
+    for (const [componentName, componentInstance] of Object.entries(
+      this.componentMap
+    )) {
+      componentInstance.render(
+        this.componentElements[componentName],
+        routeParams
+      );
     }
 
-    selectComponentElements() {
-        const elements = this.element.querySelectorAll('[data-component]');
+    container.appendChild(this.element);
+  }
 
-        for (const element of elements) {
-            const name = element.getAttribute('data-component');
-            this.componentElements[name] = element;
-        }
-    }
+  destroy() {
+    // for (const component of Object.values(this.componentMap)) {
+    //     component.destroy();
+    // }
 
-    render(container, routeParams) {
-        this.element = this.createElement(this.createTemplate());
-        this.selectComponentElements();
-
-        for (const [componentName, componentInstance] of Object.entries(this.componentMap)) {
-            componentInstance.render(
-                this.componentElements[componentName],
-                routeParams
-            )
-        }
-
-        container.appendChild(this.element);
-    }
-
-    destroy() {
-        // for (const component of Object.values(this.componentMap)) {
-        //     component.destroy();
-        // }
-
-        this.element.remove();
-    }
+    this.element.remove();
+  }
 }
 
 export class Homepage extends BasePage {
-    componentMap = {
-        main: new ContentComponent({ content: 'Homepage' }),
-    }
+  componentMap = {
+    main: new ContentComponent({ content: "Homepage" }),
+  };
 
-    createTemplate() {
-        return (`
+  createTemplate() {
+    return `
             <div>
                 <div data-component="main"></div>
             </div>
-        `);
-    }
+        `;
+  }
 }
 
 export class ProductsPage extends BasePage {
-    componentMap = {
-        main: new ContentComponent({ content: 'ProductsPage' }),
-    }
+  componentMap = {
+    main: new ContentComponent({ content: "ProductsPage" }),
+  };
 
-    createTemplate() {
-        return (`
+  createTemplate() {
+    return `
             <div>
                 <div data-component="main"></div>
             </div>
-        `);
-    }
+        `;
+  }
 }
 
-export class AboutPage extends BasePage {
-    componentMap = {
-        before: new ContentComponent({ content: 'before' }),
-        main: new ContentComponent({ content: 'content' }),
-        after: new ContentComponent({ content: 'after' }),
-    }
+export class Categories extends BasePage {
+  componentMap = {
+    // before: new ContentComponent({ content: "before" }),
+    main: new ContentComponent({ content: "Categories" }),
+    // after: new ContentComponent({ content: "after" }),
+  };
 
-    createTemplate() {
-        return (`
+  createTemplate() {
+    return `
             <div>
-                <h1>About page</h1>
-                <div data-component="before"></div>
                 <div data-component="main"></div>
-                <div data-component="after"></div>
             </div>
-        `);
-    }
+        `;
+  }
 }

@@ -3,10 +3,12 @@
 
 <head>
   <title>Админка для магазина</title>
-  <link rel="apple-touch-icon-precomposed" href="./assets/favicon/apple-touch-icon-precomposed.png">
-  <link rel="icon" href="./assets/favicon/favicon.png">
-  <link rel="stylesheet" href="./styles/all.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon-precomposed" href="/10-routes-browser-history-api/1-dashboard-page/assets/favicon/apple-touch-icon-precomposed.png">
+  <link rel="icon" href="./10-routes-browser-history-api/1-dashboard-page/assets/favicon/favicon.png">
+  <link rel="stylesheet" href="./10-routes-browser-history-api/1-dashboard-page/styles/all.css">
+  <link rel="stylesheet" href="./10-routes-browser-history-api/1-dashboard-page/style.css">
+  <link rel="stylesheet" href="./10-routes-browser-history-api/3-categories-page/styles.5a5087a0de7c39f60251.css">
+  
 </head>
 
 <body>
@@ -53,19 +55,6 @@
 
   </section>
 </main>
-<script type="module">
-  import Page from './index.js';
+<script src="./10-routes-browser-history-api/router/app.js" type="module"></script>
 
-  const contentNode = document.querySelector('#content');
-
-  async function initialize () {
-    const page = new Page();
-    const element = await page.render();
-
-    contentNode.innerHTML = '';
-    contentNode.append(element);
-  }
-
-  initialize();
-</script>
 </body>

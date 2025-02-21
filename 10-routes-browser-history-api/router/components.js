@@ -33,9 +33,9 @@ class BaseComponent {
   //     container.appendChild(this.element);
   // }
   //
-  // destroy() {
-  //     this.element.remove();
-  // }
+  destroy() {
+    this.element.remove();
+  }
 }
 export class ContentComponent extends BaseComponent {
   constructor({ content }) {

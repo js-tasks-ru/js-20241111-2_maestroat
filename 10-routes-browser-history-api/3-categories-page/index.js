@@ -3,28 +3,102 @@ import SortableList from "../../09-tests-for-frontend-apps/2-sortable-list/index
 const BACKEND_URL = "https://course-js.javascript.ru/";
 import fetchJson from "./utils/fetch-json.js";
 
-export default class CategoriesPage {
+export default class CategoriesPage extends SortableList {
   constructor() {
-    this.sortableList = null;
+    super({items: []});
     this.element = null;
     this.data = null;
     this.url = new URL(
       "/api/rest/categories?_sort=weight&_refs=subcategory",
       BACKEND_URL
     );
+    this.subElements = {};
+    this.Ulelem = null;
+  }
+  createListener() {
+    if (!this.data) {
+      return;
+    }
+    for (let elem in this.subElements) {this.subElements[elem].addEventListener("pointerdown", this.onElementMove);}
+    const categoriesContainer = this.element.querySelectorAll(".category");
+    for (let elem of categoriesContainer) {elem.addEventListener("click", e => e.target.classList.contains("category__header") && this.onHeaderClick(elem));}
+
+  }
+  destroyListener() {
+    for (let elem in this.subElements) {this.subElements[elem].removeEventListener("pointerdown", this.onElementMove);}
+  }
+  onHeaderClick(elem) {
+    elem.classList.toggle("category_open");
+}
+  onElementMove = (event) => {
+    const el = event.target.closest(".sortable-list__item");
+    const ul = event.target.closest(".sortable-list");
+    this.Ulelem = ul.dataset.ul;
+
+    if (el && event.target.closest("[data-grab-handle]")) {
+      event.preventDefault();
+      this.dragStart(el, event);
+    }
+
+  };
+  dragStart(el, { clientX: t, clientY: i }) {
+    this.pointerInitialShift = {
+      x: t - el.getBoundingClientRect().x,
+      y: i - el.getBoundingClientRect().y,
+    };
+    this.placeholderElem = document.createElement("div");
+    this.placeholderElem.className = "sortable-list__placeholder";
+    el.style.width = el.offsetWidth + "px";
+    el.style.height = el.offsetHeight + "px";
+    this.placeholderElem.style.width = el.style.width;
+    this.placeholderElem.style.height = el.style.height;
+    el.classList.add("sortable-list__item_dragging");
+    el.after(this.placeholderElem);
+    this.subElements[this.Ulelem].append(el);
+    this.draggingElem = el;
+    this.moveDraggingAt(t, i);
+    this.element.addEventListener("pointermove", this.onDocumentPointerMove);
+    this.element.addEventListener("pointerup", this.onDocumentPointerUp);
+  }
+  onDocumentPointerMove = (e) => {
+    this.moveDraggingAt(e.clientX, e.clientY);
+    if (e.clientY < this.subElements[this.Ulelem].firstElementChild.getBoundingClientRect().top)
+      this.movePlaceholderAt(0);
+    else if (e.clientY > this.subElements[this.Ulelem].lastElementChild.getBoundingClientRect().bottom)
+      this.movePlaceholderAt(this.subElements[this.Ulelem].children.length);
+    else
+      for (let t = 0; t < this.subElements[this.Ulelem].children.length; t++) {
+        let i = this.subElements[this.Ulelem].children[t];
+        if (i !== this.draggingElem && (e.clientY > i.getBoundingClientRect().top && e.clientY < i.getBoundingClientRect().bottom)) {
+          if (e.clientY < i.getBoundingClientRect().top + i.offsetHeight / 2) {
+            this.movePlaceholderAt(t);
+            break
+          }
+          this.movePlaceholderAt(t + 1);
+          break
+        }
+      }
+  };
+  movePlaceholderAt = (e) => {
+    this.subElements[this.Ulelem].children[e] !== this.placeholderElem &&
+      this.subElements[this.Ulelem].insertBefore(this.placeholderElem, this.subElements[this.Ulelem].children[e]);
+  };
+  selectSubElements() {
+    this.element.querySelectorAll("[data-ul]").forEach((element) => {
+      this.subElements[element.dataset.ul] = element;
+    });
   }
   createElement(html) {
     const div = document.createElement("div");
     div.innerHTML = html;
     return div.firstElementChild;
   }
-  template(data) {
-    if (!data) {
-
-      return `<div data-element="categoriesContainer"><div class="category category_open" data-id="bytovaya-texnika"></div></div>`;
+  template() {
+    if (!this.data) {
+      return;
     }
     let el = [];
-    for (let elem of data) {
+    for (let elem of this.data) {
       el.push(this.ulElements(elem));
     }
     return `<div data-element="categoriesContainer">${el.join("")}</div>`;
@@ -33,22 +107,17 @@ export default class CategoriesPage {
     const sortableList = new SortableList({
       items: this.data.map(item => {
         const element = document.createElement('li');
-        // element.setAttribute("data-grab-handle", "");
-        // element.dataset.grabHandle = "";
-        // element.dataset.id = item.id;
+        element.dataset.grabHandle = true;
+        element.dataset.id = item.id;
         element.innerHTML = `
        <strong>${item.title}</strong>
        <span><b>${item.count}</b> products</span>
         `;
-  
         return element;
-      })
+      }), elem
     });
     const element = document.createElement('div');
     element.append(sortableList.element);
-    // element.sortableList.createListener();
-    // console.log(sortableList.element);
-    // console.log(element);
 
     return `<div class="category category_open" data-id="${elem.id}"><header class="category__header">
         ${elem.title}
@@ -56,27 +125,24 @@ export default class CategoriesPage {
         <div class="category__body">
           <div class="subcategory-list">
           ${element.innerHTML}
-
           </div>
           </div>
         </div>`;
   }
   async render() {
-
     this.data = await this.loadData();
-    // console.log(this.data);
+
     if (!this.data) {
       return;
     }
 
-    this.element = this.createElement(this.template(this.data));
-    // this.createListener();
+    this.element = this.createElement(this.template());
+    this.selectSubElements();
+    this.createListener();
     return this.element;
   }
   async loadData() {
-    // this.element.classList.add('sortable-table_loading');
     const data = await fetchJson(this.url.toString());
-    // this.element.classList.remove('sortable-table_loading');
     return data;
   }
   remove() {

@@ -25,7 +25,7 @@ class BasePage {
     }
   }
 
-  render(container, routeParams) {
+  render(container) {
     this.element = this.createElement(this.createTemplate());
     this.selectComponentElements();
 
@@ -33,8 +33,7 @@ class BasePage {
       this.componentMap
     )) {
       componentInstance.render(
-        this.componentElements[componentName],
-        routeParams
+        this.componentElements[componentName]
       );
     }
 
@@ -66,7 +65,23 @@ export class Homepage extends BasePage {
 
 export class ProductsPage extends BasePage {
   componentMap = {
+    // before: new ContentComponent({ content: "before" }),
     main: new ContentComponent({ content: "ProductsPage" }),
+    // after: new ContentComponent({ content: "after" }),
+  };
+
+  createTemplate() {
+    return `
+            <div>
+                <div data-component="main"></div>
+            </div>
+        `;
+  }
+}
+
+export class ProductsPageAdd extends BasePage {
+  componentMap = {
+    main: new ContentComponent({ content: "ProductsPageAdd" }),
   };
 
   createTemplate() {

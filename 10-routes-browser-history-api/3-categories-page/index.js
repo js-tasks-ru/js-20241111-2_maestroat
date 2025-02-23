@@ -13,7 +13,7 @@ export default class CategoriesPage extends SortableList {
       BACKEND_URL
     );
     this.subElements = {};
-    this.Ulelem = null;
+    this.listElem = null;
   }
   createListener() {
     if (!this.data) {
@@ -22,18 +22,17 @@ export default class CategoriesPage extends SortableList {
     for (let elem in this.subElements) {this.subElements[elem].addEventListener("pointerdown", this.onElementMove);}
     const categoriesContainer = this.element.querySelectorAll(".category");
     for (let elem of categoriesContainer) {elem.addEventListener("click", e => e.target.classList.contains("category__header") && this.onHeaderClick(elem));}
-
   }
   destroyListener() {
     for (let elem in this.subElements) {this.subElements[elem].removeEventListener("pointerdown", this.onElementMove);}
   }
   onHeaderClick(elem) {
     elem.classList.toggle("category_open");
-}
+  }
   onElementMove = (event) => {
     const el = event.target.closest(".sortable-list__item");
     const ul = event.target.closest(".sortable-list");
-    this.Ulelem = ul.dataset.ul;
+    this.listElem = ul.dataset.list;
 
     if (el && event.target.closest("[data-grab-handle]")) {
       event.preventDefault();
@@ -54,7 +53,7 @@ export default class CategoriesPage extends SortableList {
     this.placeholderElem.style.height = el.style.height;
     el.classList.add("sortable-list__item_dragging");
     el.after(this.placeholderElem);
-    this.subElements[this.Ulelem].append(el);
+    this.subElements[this.listElem].append(el);
     this.draggingElem = el;
     this.moveDraggingAt(t, i);
     this.element.addEventListener("pointermove", this.onDocumentPointerMove);
@@ -62,13 +61,13 @@ export default class CategoriesPage extends SortableList {
   }
   onDocumentPointerMove = (e) => {
     this.moveDraggingAt(e.clientX, e.clientY);
-    if (e.clientY < this.subElements[this.Ulelem].firstElementChild.getBoundingClientRect().top)
+    if (e.clientY < this.subElements[this.listElem].firstElementChild.getBoundingClientRect().top)
       this.movePlaceholderAt(0);
-    else if (e.clientY > this.subElements[this.Ulelem].lastElementChild.getBoundingClientRect().bottom)
-      this.movePlaceholderAt(this.subElements[this.Ulelem].children.length);
+    else if (e.clientY > this.subElements[this.listElem].lastElementChild.getBoundingClientRect().bottom)
+      this.movePlaceholderAt(this.subElements[this.listElem].children.length);
     else
-      for (let t = 0; t < this.subElements[this.Ulelem].children.length; t++) {
-        let i = this.subElements[this.Ulelem].children[t];
+      for (let t = 0; t < this.subElements[this.listElem].children.length; t++) {
+        let i = this.subElements[this.listElem].children[t];
         if (i !== this.draggingElem && (e.clientY > i.getBoundingClientRect().top && e.clientY < i.getBoundingClientRect().bottom)) {
           if (e.clientY < i.getBoundingClientRect().top + i.offsetHeight / 2) {
             this.movePlaceholderAt(t);
@@ -80,12 +79,12 @@ export default class CategoriesPage extends SortableList {
       }
   };
   movePlaceholderAt = (e) => {
-    this.subElements[this.Ulelem].children[e] !== this.placeholderElem &&
-      this.subElements[this.Ulelem].insertBefore(this.placeholderElem, this.subElements[this.Ulelem].children[e]);
+    this.subElements[this.listElem].children[e] !== this.placeholderElem &&
+      this.subElements[this.listElem].insertBefore(this.placeholderElem, this.subElements[this.listElem].children[e]);
   };
   selectSubElements() {
-    this.element.querySelectorAll("[data-ul]").forEach((element) => {
-      this.subElements[element.dataset.ul] = element;
+    this.element.querySelectorAll("[data-list]").forEach((element) => {
+      this.subElements[element.dataset.list] = element;
     });
   }
   createElement(html) {

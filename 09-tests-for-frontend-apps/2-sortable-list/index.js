@@ -14,7 +14,7 @@ export default class SortableList {
     return div.firstElementChild;
   }
   template() {
-    return `<ul class="sortable-list" ${this.elem?.id ? `data-ul="${this.elem.id}"` : ""}>${this.liElements()}</ul>`;
+    return `<ul class="sortable-list" ${this.elem?.id ? `data-list="${this.elem.id}"` : ""}>${this.liElements()}</ul>`;
   }
   liElements() {
     return this.items

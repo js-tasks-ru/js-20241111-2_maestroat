@@ -1,6 +1,7 @@
 import Page from "../1-dashboard-page/index.js";
+import ProductsPage from "../2-products-page/index.js";
 import CategoriesPage from "../3-categories-page/index.js";
-import ProductFormV2 from "../../08-forms-fetch-api-part-2/1-product-form-v1/index.js";
+import ProductAddPage from "../5-product-add-page/index.js";
 
 class BaseComponent {
   element;
@@ -25,14 +26,11 @@ class BaseComponent {
     return `<div></div>`;
   }
 
-  // render(container, routeParams) {
-  //     this.routeParams = routeParams;
-  //     this.element = this.createElement(this.createTemplate());
-  //     this.selectSubElements();
-  //
-  //     container.appendChild(this.element);
-  // }
-  //
+  render() {
+    this.element = this.createElement(this.createTemplate());
+    this.selectSubElements();
+    return this.element;
+  }
   destroy() {
     this.element.remove();
   }
@@ -41,60 +39,27 @@ export class ContentComponent extends BaseComponent {
   constructor({ content }) {
     super();
     this.content = content;
+    this.page = null;
   }
-
-  render(container, routeParams) {
-    console.log(this.content);
+  async render(container) {
     switch (this.content) {
-    case "ProductsPage":
-      const productId =
-          "101-planset-lenovo-tab-p10-tb-x705l-32-gb-3g-lte-belyj";
-      const productForm = new ProductFormV2(productId);
-
-      const renderForm = async () => {
-        await productForm.render();
-
-        productForm.element.addEventListener("product-saved", (event) => {
-          console.error("product-saved", event.detail);
-        });
-
-        productForm.element.addEventListener("product-updated", (event) => {
-          console.error("product-updated", event.detail);
-        });
-        container.innerHTML = "";
-        container.append(productForm.element);
-      };
-      renderForm();
-      break;
-
     case "Homepage":
-      async function initialize() {
-        const page = new Page();
-        const element = await page.render();
-
-        container.innerHTML = "";
-        container.append(element);
-      }
-      initialize();
+      this.page = new Page();
       break;
-
+    case "ProductsPage":
+      this.page = new ProductsPage();
+      break;
+    case "ProductsPageAdd":
+      const productId = "101-planset-lenovo-tab-p10-tb-x705l-32-gb-3g-lte-belyj";
+      this.page = new ProductAddPage(productId);
+      break;
     case "Categories":
-      async function initialize2() {
-        const categoriesPage = new CategoriesPage();
-        const element = await categoriesPage.render();
-
-        container.innerHTML = "";
-        container.append(element);
-      }
-      initialize2();
-      break;
-
-    default:
-      /*
-                    здесь код, который выполнится в случае,
-                    если не совпала ни с одним значением
-                */
+      this.page = new CategoriesPage();
       break;
     }
+    const element = await this.page.render();
+
+    container.innerHTML = '';
+    container.append(element);
   }
 }

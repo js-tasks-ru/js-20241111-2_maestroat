@@ -1,5 +1,5 @@
 import Router from "./browser-router.js";
-import { Homepage, ProductsPage, Categories } from "./pages-map.js";
+import { Homepage, ProductsPage, ProductsPageAdd, Categories } from "./pages-map.js";
 
 const container = document.getElementById('content');
 
@@ -11,6 +11,10 @@ const routes = [
   {
     path: '/products',
     page: new ProductsPage()
+  },
+  {
+    path: '/products/add',
+    page: new ProductsPageAdd()
   },
   {
     path: '/categories',

@@ -73,7 +73,7 @@ export default class SortableTableV3 extends SortableTableV2 {
       this.loading = true;
       this.start = this.end;
       this.end = this.start + this.step;
-      const data = await this.loadData(id, order, this.start, this.end);
+      this.data = await this.loadData(id, order, this.start, this.end);
       if (this.isSortLocally) {
         this.headersConfig.forEach((columnConfig) => {
           if (
@@ -83,26 +83,26 @@ export default class SortableTableV3 extends SortableTableV2 {
             order
           ) {
             if (columnConfig["sortType"] === "string") {
-              data = this.sortString(data, id, order);
+              this.data = this.sortString(this.data, id, order);
             } else {
               if (columnConfig["sortType"] === "number") {
-                data = this.sortNumber(data, id, order);
+                this.data = this.sortNumber(this.data, id, order);
               }
             }
-            this.update(data);
+            this.update();
           }
         });
       }
       if (!this.isSortLocally) {
-        this.update(data);
+        this.update();
       }
       this.loading = false;
     }
   };
-  update(data) {
+  update() {
     const rows = document.createElement("div");
 
-    this.data = data;
+    // this.data = data;
     rows.innerHTML = this.createTableBodyTemplate();
 
     this.subElements.body.append(...rows.childNodes);

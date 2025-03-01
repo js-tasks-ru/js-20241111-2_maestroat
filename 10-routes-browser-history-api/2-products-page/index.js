@@ -66,7 +66,7 @@ export default class ProductsPage {
     this.subElements.DoubleSlider.append(this.DoubleSlider.element);
 
     if (!this.dateSelect) {
-      this.subElements.sortableTable.append(this.sortableTableCreate("api/rest/products").element);
+      this.subElements.sortableTable.append(this.sortableTableCreate("api/rest/products?_embed=subcategory.category").element);
     } else {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);

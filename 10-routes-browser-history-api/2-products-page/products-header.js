@@ -25,7 +25,7 @@ const header = [
     template: data => {
       return `
           <div class="sortable-table__cell">
-            ${data.title || data}
+            ${data.title}
           </div>
         `;
     }

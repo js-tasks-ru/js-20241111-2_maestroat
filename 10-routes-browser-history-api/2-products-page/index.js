@@ -89,14 +89,6 @@ export default class ProductsPage {
     this.dateSelect = false;
     this.render();
   }
-  inToProductEdit = (e) => {
-    console.log(e.target);
-    if (e.target.closest("a")) {
-      const id = e.target.closest("a").dataset.id;
-      window.history.pushState({}, "", `/products/${id}/edit`);
-    }
-    return;
-  }
   async updateUrl() {
     const url = new URL("api/rest/products?_embed=subcategory.category", BACKEND_URL);
     this.range.from && url.searchParams.set("price_gte", this.range.from);
@@ -117,14 +109,12 @@ export default class ProductsPage {
     this.element.addEventListener("change", this.onFormSelect);
     this.element.addEventListener("input", this.onFormSelect);
     this.element.addEventListener("click", this.resetFilters);
-    // this.element.addEventListener("click", this.inToProductEdit);
   }
   destroyListeners() {
     this.element.removeEventListener("range-select", this.onDableSliderDateSelect);
     this.element.removeEventListener("change", this.onFormSelect);
     this.element.removeEventListener("input", this.onFormSelect);
     this.element.removeEventListener("click", this.resetFilters);
-    // this.element.removeEventListener("click", this.inToProductEdit);
   }
   onDableSliderDateSelect = (e) => {
     this.selectSubElements();
@@ -139,6 +129,7 @@ export default class ProductsPage {
   onFormSelect = (e) => {
     e.preventDefault();
     this.selectSubElements();
+    this.status = this.subElements.filterStatus.value;
     this.filterName = this.subElements.filterName.value.trim();
     this.dateSelect = true;
     this.render();

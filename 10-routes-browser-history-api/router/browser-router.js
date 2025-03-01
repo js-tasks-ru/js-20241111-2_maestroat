@@ -48,15 +48,20 @@ export default class Router {
       this.processPath(url.pathname);
     }
 
+    historyChange = () => {
+      this.processPath(window.location.pathname);
+    }
     run() {
       const url = new URL(window.location.href);
 
       this.processPath(url.pathname);
 
       document.addEventListener("click", this.handleDocumentClick);
+      window.addEventListener('popstate', this.historyChange);
     }
 
     destroy() {
       document.removeEventListener("click", this.handleDocumentClick);
+      window.removeEventListener('popstate', this.historyChange);
     }
 }

@@ -27,6 +27,7 @@ class BaseComponent {
   }
   render(routeParams) {
     this.routeParams = routeParams;
+
     this.element = this.createElement(this.createTemplate());
     this.selectSubElements();
     return this.element;
@@ -42,7 +43,9 @@ export class ContentComponent extends BaseComponent {
     this.content = content;
     this.page = null;
   }
-  async render(container) {
+  async render(container, ...args) {
+    super.render(...args);
+
     switch (this.content) {
     case "Homepage":
       this.page = new Page();
@@ -51,11 +54,9 @@ export class ContentComponent extends BaseComponent {
       this.page = new ProductsPage();
       break;
     case "ProductsPageAdd":
-      // const productId = "101-planset-lenovo-tab-p10-tb-x705l-32-gb-3g-lte-belyj";
       this.page = new ProductAddPage();
       break;
     case "ProductsPageEdit":
-      console.log(this.routeParams);
       this.page = new ProductAddPage(this.routeParams);
       break;
     case "Categories":
@@ -65,6 +66,7 @@ export class ContentComponent extends BaseComponent {
       this.page = new SalesPage();
       break;
     }
+
     const element = await this.page.render();
 
     container.innerHTML = '';

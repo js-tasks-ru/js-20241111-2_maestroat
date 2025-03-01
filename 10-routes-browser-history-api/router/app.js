@@ -17,7 +17,8 @@ const routes = [
     page: new ProductsPageAdd()
   },
   {
-    path: '/^\/products\/([\w-]+-?([\w]+)?)/i',
+    path: /^\/products\/([\w-]+-([\w-]+)?)/i,
+    // path: '/products/102-planset-apple-ipad-2019-32-gb--seryj',
     page: new ProductsPageEdit()
   },
   {

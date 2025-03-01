@@ -20,7 +20,11 @@ export default class ProductForm {
     return div.firstElementChild;
   }
   createTemplate() {
-    return `<div class="product-form">
+    return `<div class="product-form"><div class="content__top-panel">
+        <h1 class="page-title">
+          <a href="/products" class="link">Товары</a> ${this.productId ? `/ Редактировать` : `/ Добавить`}
+        </h1>
+      </div><div class="product-form">
     <form data-element="productForm" class="form-grid">
     <div class="form-group form-group__half_left">
         <fieldset>
@@ -69,7 +73,7 @@ export default class ProductForm {
         </button>
         </div>
     </form>
-  </div>`;
+  </div></div>`;
   }
   selectSubElements() {
     this.element.querySelectorAll("[data-element]").forEach((element) => {

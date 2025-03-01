@@ -9,13 +9,11 @@ class BasePage {
     element.innerHTML = template;
     return element.firstElementChild;
   }
-
   createTemplate() {
     return `
             <div></div>
         `;
   }
-
   selectComponentElements() {
     const elements = this.element.querySelectorAll("[data-component]");
 
@@ -24,8 +22,7 @@ class BasePage {
       this.componentElements[name] = element;
     }
   }
-
-  render(container) {
+  render(container, routeParams) {
     this.element = this.createElement(this.createTemplate());
     this.selectComponentElements();
 
@@ -33,22 +30,16 @@ class BasePage {
       this.componentMap
     )) {
       componentInstance.render(
-        this.componentElements[componentName]
+        this.componentElements[componentName], routeParams
       );
     }
 
     container.appendChild(this.element);
   }
-
   destroy() {
-    // for (const component of Object.values(this.componentMap)) {
-    //     component.destroy();
-    // }
-
     this.element.remove();
   }
 }
-
 export class Homepage extends BasePage {
   componentMap = {
     main: new ContentComponent({ content: "Homepage" }),
@@ -62,12 +53,9 @@ export class Homepage extends BasePage {
         `;
   }
 }
-
 export class ProductsPage extends BasePage {
   componentMap = {
-    // before: new ContentComponent({ content: "before" }),
     main: new ContentComponent({ content: "ProductsPage" }),
-    // after: new ContentComponent({ content: "after" }),
   };
 
   createTemplate() {
@@ -78,7 +66,6 @@ export class ProductsPage extends BasePage {
         `;
   }
 }
-
 export class ProductsPageAdd extends BasePage {
   componentMap = {
     main: new ContentComponent({ content: "ProductsPageAdd" }),
@@ -92,12 +79,22 @@ export class ProductsPageAdd extends BasePage {
         `;
   }
 }
+export class ProductsPageEdit extends BasePage {
+  componentMap = {
+    main: new ContentComponent({ content: "ProductsPageEdit" }),
+  };
 
+  createTemplate() {
+    return `
+            <div>
+                <div data-component="main"></div>
+            </div>
+        `;
+  }
+}
 export class Categories extends BasePage {
   componentMap = {
-    // before: new ContentComponent({ content: "before" }),
     main: new ContentComponent({ content: "Categories" }),
-    // after: new ContentComponent({ content: "after" }),
   };
 
   createTemplate() {
@@ -107,6 +104,19 @@ export class Categories extends BasePage {
               <h1 class="page-title">Категории товаров</h1>
             </div>
             <p>Подкатегории можно перетаскивать, меняя их порядок внутри своей категории.</p>
+                <div data-component="main"></div>
+            </div>
+        `;
+  }
+}
+export class Sales extends BasePage {
+  componentMap = {
+    main: new ContentComponent({ content: "Sales" }),
+  };
+
+  createTemplate() {
+    return `
+            <div>
                 <div data-component="main"></div>
             </div>
         `;

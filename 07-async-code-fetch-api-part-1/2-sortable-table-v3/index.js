@@ -21,7 +21,6 @@ export default class SortableTableV3 extends SortableTableV2 {
   ) {
     super(headersConfig);
     this.url = url;
-    this.headersConfig = headersConfig;
     this.data = [];
     this.sorted = sorted;
     this.isSortLocally = isSortLocally;
@@ -33,7 +32,9 @@ export default class SortableTableV3 extends SortableTableV2 {
   }
   async render() {
     const { id, order } = this.sorted;
-    this.data = await this.loadData(id, order, this.start, this.end);
+    const data = await this.loadData(id, order, this.start, this.end);
+    if (!data || 0 === data.length) {return;}
+    this.data = data;
     this.subElements.body.innerHTML = this.createTableBodyTemplate();
     this.initEventListeners();
   }
@@ -55,7 +56,7 @@ export default class SortableTableV3 extends SortableTableV2 {
 
     if (!data || 0 === data.length) {
       this.element.classList.add("sortable-table_empty");
-      return (this.element.innerHTML = "<div>Нет данных</div>");
+      return;
     } else {
       this.element.classList.remove("sortable-table_empty");
     }
@@ -80,7 +81,7 @@ export default class SortableTableV3 extends SortableTableV2 {
             id &&
             columnConfig["sortable"] !== "false" &&
             id === columnConfig["id"] &&
-            order
+            order && this.data
           ) {
             if (columnConfig["sortType"] === "string") {
               this.data = this.sortString(this.data, id, order);
@@ -101,8 +102,6 @@ export default class SortableTableV3 extends SortableTableV2 {
   };
   update() {
     const rows = document.createElement("div");
-
-    // this.data = data;
     rows.innerHTML = this.createTableBodyTemplate();
 
     this.subElements.body.append(...rows.childNodes);

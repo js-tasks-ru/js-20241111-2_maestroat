@@ -1,3 +1,5 @@
+import SortableList from "../../09-tests-for-frontend-apps/2-sortable-list/index.js";
+
 import escapeHtml from "./utils/escape-html.js";
 import fetchJson from "./utils/fetch-json.js";
 
@@ -126,25 +128,28 @@ export default class ProductForm {
         quantity.value = 1;
       }
 
-      const images = product[0].images
-        .map((el) => {
-          return `<li class="products-edit__imagelist-item sortable-list__item" style="">
-          <input type="hidden" name="url" value="${el.url}">
-          <input type="hidden" name="source" value="${el.source}">
-          <span>
-            <img src="/10-routes-browser-history-api/5-product-add-page/icon-grab.svg" data-grab-handle="" alt="grab">
-            <img class="sortable-table__cell-img" alt="Image" src="${el.url}">
-            <span>${el.source}</span>
-          </span>
-          <button type="button">
-            <img src="/10-routes-browser-history-api/5-product-add-page/icon-trash.svg" data-delete-handle="" alt="delete">
-          </button></li>`;
-        })
-        .join("");
+      const sortableList = new SortableList({
+        items: product[0].images.map(el => {
+          const element = document.createElement('li');
+    
+          element.innerHTML = `
+            <input type="hidden" name="url" value="${el.url}">
+        <input type="hidden" name="source" value="${el.source}">
+        <span>
+          <img src="/10-routes-browser-history-api/5-product-add-page/icon-grab.svg" data-grab-handle="" alt="grab">
+          <img class="sortable-table__cell-img" alt="Image" src="${el.url}">
+          <span>${el.source}</span>
+        </span>
+        <button type="button">
+          <img src="/10-routes-browser-history-api/5-product-add-page/icon-trash.svg" data-delete-handle="" alt="delete">
+        </button>
+          `;
 
-      this.subElements.imageListContainer.append(
-        this.createElement(`<ul class="sortable-list">${images}</ul>`)
-      );
+          return element;
+        })
+      });
+
+      this.subElements.imageListContainer.append(sortableList.element);
     }
     return this.element;
   }

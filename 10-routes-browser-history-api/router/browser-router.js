@@ -8,40 +8,36 @@ export default class Router {
 
     processPath(path) {
       for (const route of this.routes) {
-        // const useRoute = route.path instanceof RegExp
-        //   ? route.path.test(path)
-        //   : route.path === path;
+        const useRoute = route.path instanceof RegExp
+          ? route.path.test(path)
+          : route.path === path;
 
-        if (route.path === path) {
+        if (useRoute) {
           if (this.lastRoute) {
             this.lastRoute.page.destroy();
           }
-          // const routeParams = this.extractRouteParams(route, path);
-          route.page.render(this.container);
+          const routeParams = this.extractRouteParams(route, path);
+          route.page.render(this.container, routeParams);
           this.lastRoute = route;
         }
       }
     }
 
-    // extractRouteParams(route, path) {
-    //   if (route.path instanceof RegExp) {
-    //     const result = path.match(route.path);
-    //     if (result) {
-    //       return result.slice(1);
-    //     }
-    //   }
-    //   return [];
-    // }
+    extractRouteParams(route, path) {
+      if (route.path instanceof RegExp) {
+        const result = path.match(route.path);
+        if (result) {
+          return result.slice(1);
+        }
+      }
+      return [];
+    }
 
     handleDocumentClick = (e) => {
       const linkElement = e.target.closest('a');
       if (!linkElement) {
         return;
       }
-
-      // if (typeof linkElement.dataset.rapidLink === "undefined") {
-      //     return;
-      // }
 
       e.preventDefault();
 

@@ -106,9 +106,9 @@ export default class SortableList {
   }
   remove() {
     this.element.remove();
-    this.destroyListener();
   }
   destroy() {
     this.remove();
+    this.destroyListener();
   }
 }

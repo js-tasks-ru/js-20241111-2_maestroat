@@ -1,5 +1,5 @@
 import Router from "./browser-router.js";
-import { Homepage, ProductsPage, ProductsPageAdd, Categories } from "./pages-map.js";
+import { Homepage, ProductsPage, ProductsPageAdd, ProductsPageEdit, Categories, Sales } from "./pages-map.js";
 
 const container = document.getElementById('content');
 
@@ -17,8 +17,16 @@ const routes = [
     page: new ProductsPageAdd()
   },
   {
+    path: '/^\/products\/([\w-]+-?([\w]+)?)/i',
+    page: new ProductsPageEdit()
+  },
+  {
     path: '/categories',
     page: new Categories()
+  },
+  {
+    path: '/sales',
+    page: new Sales()
   },
 ];
 

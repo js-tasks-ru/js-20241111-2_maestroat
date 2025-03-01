@@ -1,15 +1,11 @@
-import RangePicker from "./components/range-picker/src/index.js";
-// import SortableTable from "./components/sortable-table/src/index.js";
+import RangePicker from "../../08-forms-fetch-api-part-2/2-range-picker/index.js";
+// import SortableTable from "./components/2-sortable-table-v3/index.js";
 import SortableTable from "../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js";
-
-import ColumnChart from "./components/column-chart/src/index.js";
-import header from "./bestsellers-header.js";
-
-import fetchJson from "./utils/fetch-json.js";
+import header from "./sales-header.js";
 
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
-export default class Page {
+export default class SalesPage {
   constructor() {
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
@@ -19,11 +15,9 @@ export default class Page {
       to: new Date(),
     };
     this.rangePicker = null;
-    this.columnChartOrders = this.columnChartOrdersCreate();
-    this.columnChartSales = this.columnChartSalesCreate();
-    this.columnChartCustomers = this.columnChartCustomersCreate();
     this.dateSelect = false;
     this.createListeners();
+    this.render();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -31,20 +25,12 @@ export default class Page {
     return div.firstElementChild;
   }
   createTemplate() {
-    return `<div class="dashboard">
+    return `<div class="sales">
       <div class="content__top-panel">
-        <h2 class="page-title">Dashboard</h2>
+        <h1 class="page-title">Продажи</h1>
         <!-- RangePicker component -->
         <div data-element="rangePicker"></div>
       </div>
-      <div data-element="chartsRoot" class="dashboard__charts">
-        <!-- column-chart components -->
-        <div data-element="ordersChart" class="dashboard__chart_orders"></div>
-        <div data-element="salesChart" class="dashboard__chart_sales"></div>
-        <div data-element="customersChart" class="dashboard__chart_customers"></div>
-      </div>
-
-      <h3 class="block-title">Best sellers</h3>
 
       <div data-element="sortableTable">
         <!-- sortable-table component -->
@@ -64,15 +50,8 @@ export default class Page {
     this.subElements.rangePicker.append(this.rangePicker.element);
 
     if (!this.dateSelect) {
-      this.subElements.ordersChart.append(this.columnChartOrders.element);
-      this.subElements.salesChart.append(this.columnChartSales.element);
-      this.subElements.customersChart.append(this.columnChartCustomers.element);
-      this.subElements.sortableTable.append(this.sortableTableCreate("api/dashboard/bestsellers").element);
+      this.subElements.sortableTable.append(this.sortableTableCreate(`/api/rest/orders?createdAt_gte=${this.range.from.toISOString()}&createdAt_lte=${this.range.to.toISOString()}`).element);
     } else {
-      this.columnChartOrders.update(this.range.from, this.range.to);
-      this.columnChartSales.update(this.range.from, this.range.to);
-      this.columnChartCustomers.update(this.range.from, this.range.to);
-
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
@@ -93,36 +72,11 @@ export default class Page {
     this.render();
   }
   async updateUrl() {
-    const url = new URL("api/dashboard/bestsellers", BACKEND_URL);
-    url.searchParams.append("from", this.range.from.toISOString());
-    url.searchParams.append("to", this.range.to.toISOString());
+    const url = new URL(`/api/rest/orders`, BACKEND_URL);
+    url.searchParams.append("createdAt_gte", this.range.from.toISOString());
+    url.searchParams.append("createdAt_lt", this.range.to.toISOString());
 
     return url;
-  }
-  columnChartOrdersCreate() {
-    return new ColumnChart({
-      url: "api/dashboard/orders",
-      range: this.range,
-      link: "#",
-      label: "orders",
-      formatHeading: (data) => data.toLocaleString(),
-    });
-  }
-  columnChartSalesCreate() {
-    return new ColumnChart({
-      url: "api/dashboard/sales",
-      range: this.range,
-      label: "sales",
-      formatHeading: (data) => data.toLocaleString(),
-    });
-  }
-  columnChartCustomersCreate() {
-    return new ColumnChart({
-      url: "api/dashboard/customers",
-      range: this.range,
-      label: "customers",
-      formatHeading: (data) => data.toLocaleString(),
-    });
   }
   sortableTableCreate(url) {
     return new SortableTable(header, {

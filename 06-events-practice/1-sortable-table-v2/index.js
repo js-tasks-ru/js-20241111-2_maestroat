@@ -3,8 +3,6 @@ export default class SortableTableV2 extends SortableTable {
   constructor(headersConfig, { data = [], sorted = {} } = {}) {
     super(headersConfig, data);
     this.sortOnClient = super.sort;
-    this.config = headersConfig;
-    this.data = data;
     this.isSortLocally = sorted;
     this.createListeners();
     this.arrowElement = this.createArrowElement();

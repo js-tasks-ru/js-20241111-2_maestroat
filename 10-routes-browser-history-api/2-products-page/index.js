@@ -1,8 +1,6 @@
 import SortableTable from "../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js";
 import DoubleSlider from "../../06-events-practice/3-double-slider/index.js";
-import header from "./bestsellers-header.js";
-
-import fetchJson from "./utils/fetch-json.js";
+import header from "./products-header.js";
 
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
@@ -12,6 +10,12 @@ export default class ProductsPage {
     this.subElements = {};
     this.selectSubElements();
     this.dateSelect = false;
+    this.range = {
+      from: null,
+      to: null,
+    };
+    this.status = null;
+    this.filterName = null;
     this.createListeners();
   }
   createElement(html) {
@@ -29,13 +33,13 @@ export default class ProductsPage {
         <form class="form-inline">
           <div class="form-group">
             <label class="form-label">Сортировать по:</label>
-            <input type="text" data-elem="filterName" class="form-control" placeholder="Название товара">
+            <input type="text" data-element="filterName" class="form-control" placeholder="Название товара">
           </div>
                   <!-- DoubleSlider component -->
         <div data-element="DoubleSlider"></div>
           <div class="form-group">
             <label class="form-label">Статус:</label>
-            <select class="form-control" data-elem="filterStatus">
+            <select class="form-control" data-element="filterStatus">
               <option value="" selected="">Любой</option>
               <option value="1">Активный</option>
               <option value="0">Неактивный</option>
@@ -58,25 +62,47 @@ export default class ProductsPage {
     this.subElements.DoubleSlider.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
-    this.DoubleSlider = new DoubleSlider();
+    this.DoubleSlider = new DoubleSlider({min: 0, max: 4000, selected: this.range, formatValue: value => '$' + value});
     this.subElements.DoubleSlider.append(this.DoubleSlider.element);
-
-    console.log(this.subElements);
 
     if (!this.dateSelect) {
       this.subElements.sortableTable.append(this.sortableTableCreate("api/rest/products").element);
     } else {
-
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
 
     return this.element;
   }
+  resetFilters = (e) => {
+    const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");
+    if (!buttonPlaceholder) {
+      return;
+    }
+    this.range = {
+      from: null,
+      to: null,
+    };
+    this.subElements.filterStatus.value = "";
+    this.subElements.filterName.value = "";
+  
+    this.dateSelect = false;
+    this.render();
+  }
+  inToProductEdit = (e) => {
+    console.log(e.target);
+    if (e.target.closest("a")) {
+      const id = e.target.closest("a").dataset.id;
+      window.history.pushState({}, "", `/products/${id}/edit`);
+    }
+    return;
+  }
   async updateUrl() {
-    const url = new URL("api/rest/products", BACKEND_URL);
-    url.searchParams.append("from", this.range.from.toISOString());
-    url.searchParams.append("to", this.range.to.toISOString());
+    const url = new URL("api/rest/products?_embed=subcategory.category", BACKEND_URL);
+    this.range.from && url.searchParams.set("price_gte", this.range.from);
+    this.range.to && url.searchParams.set("price_lte", this.range.to);
+    this.status && url.searchParams.set("status", this.status);
+    this.filterName && url.searchParams.set("title_like", this.filterName);
 
     return url;
   }
@@ -87,19 +113,42 @@ export default class ProductsPage {
     });
   }
   createListeners() {
-    this.element.addEventListener("date-select", this.onRangePickerDateSelect);
+    this.element.addEventListener("range-select", this.onDableSliderDateSelect);
+    this.element.addEventListener("change", this.onFormSelect);
+    this.element.addEventListener("input", this.onFormSelect);
+    this.element.addEventListener("click", this.resetFilters);
+    // this.element.addEventListener("click", this.inToProductEdit);
   }
   destroyListeners() {
-    this.element.removeEventListener(
-      "date-select",
-      this.onRangePickerDateSelect
-    );
+    this.element.removeEventListener("range-select", this.onDableSliderDateSelect);
+    this.element.removeEventListener("change", this.onFormSelect);
+    this.element.removeEventListener("input", this.onFormSelect);
+    this.element.removeEventListener("click", this.resetFilters);
+    // this.element.removeEventListener("click", this.inToProductEdit);
   }
+  onDableSliderDateSelect = (e) => {
+    this.selectSubElements();
+    this.range = {
+      from: e.detail.from,
+      to: e.detail.to,
+    };
+
+    this.dateSelect = true;
+    this.render();
+  };
+  onFormSelect = (e) => {
+    e.preventDefault();
+    this.selectSubElements();
+    this.filterName = this.subElements.filterName.value.trim();
+    this.dateSelect = true;
+    this.render();
+  };
   remove() {
     this.element.remove();
   }
   destroy() {
     this.remove();
+    this.destroyListeners();
   }
 
 }

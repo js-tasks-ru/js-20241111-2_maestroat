@@ -53,7 +53,7 @@ export default class Page {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render() {
+  async render(container) {
     this.subElements.rangePicker.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
@@ -74,7 +74,8 @@ export default class Page {
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
 
-    return this.element;
+    container.innerHTML = '';
+    container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");

@@ -41,7 +41,6 @@ export default class Router {
       e.preventDefault();
       const url = new URL(linkElement.href);
       history.pushState(null, undefined, url.pathname);
-      
       this.processPath(url.pathname);
     }
 

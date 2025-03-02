@@ -15,8 +15,8 @@ export default class SalesPage {
     };
     this.rangePicker = null;
     this.dateSelect = false;
+    this.container = null;
     this.createListeners();
-    this.render();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -41,7 +41,7 @@ export default class SalesPage {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render() {
+  async render(container) {
     this.subElements.rangePicker.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
@@ -54,8 +54,10 @@ export default class SalesPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-
-    return this.element;
+    
+    this.container = container;
+    container.innerHTML = '';
+    container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");

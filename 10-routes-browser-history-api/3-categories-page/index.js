@@ -134,7 +134,7 @@ export default class CategoriesPage extends SortableList {
           </div>
         </div>`;
   }
-  async render() {
+  async render(container) {
     this.data = await this.loadData();
 
     if (!this.data) {
@@ -144,7 +144,8 @@ export default class CategoriesPage extends SortableList {
     this.element = this.createElement(this.template());
     this.selectSubElements();
     this.createListener();
-    return this.element;
+    container.innerHTML = '';
+    container.append(this.element);
   }
   async loadData() {
     const data = await fetchJson(this.url.toString());

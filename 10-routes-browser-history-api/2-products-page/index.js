@@ -16,6 +16,7 @@ export default class ProductsPage {
     };
     this.status = null;
     this.filterName = null;
+    this.container = null;
     this.createListeners();
   }
   createElement(html) {
@@ -58,7 +59,7 @@ export default class ProductsPage {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render() {
+  async render(container, routeParams) {
     this.subElements.DoubleSlider.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
@@ -71,8 +72,10 @@ export default class ProductsPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-
-    return this.element;
+    this.container = container;
+    // console.log(this.container);
+    this.container.innerHTML = '';
+    this.container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");
@@ -87,7 +90,7 @@ export default class ProductsPage {
     this.subElements.filterName.value = "";
   
     this.dateSelect = false;
-    this.render();
+    this.render(this.container);
   }
   async updateUrl() {
     const url = new URL("api/rest/products?_embed=subcategory.category", BACKEND_URL);
@@ -124,7 +127,7 @@ export default class ProductsPage {
     };
 
     this.dateSelect = true;
-    this.render();
+    this.render(this.container);
   };
   onFormSelect = (e) => {
     e.preventDefault();
@@ -132,7 +135,7 @@ export default class ProductsPage {
     this.status = this.subElements.filterStatus.value;
     this.filterName = this.subElements.filterName.value.trim();
     this.dateSelect = true;
-    this.render();
+    this.render(this.container);
   };
   remove() {
     this.element.remove();

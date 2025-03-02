@@ -67,6 +67,7 @@ body {
 }
 .product-slider {
   flex-grow: 1;
+  min-width: 200px
 }
 /* SortableList styles */
 .sortable-list {

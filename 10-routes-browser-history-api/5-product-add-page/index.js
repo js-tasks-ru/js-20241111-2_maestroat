@@ -6,10 +6,11 @@ import fetchJson from "./utils/fetch-json.js";
 const IMGUR_CLIENT_ID = "28aaa2e823b03b1";
 const BACKEND_URL = "https://course-js.javascript.ru";
 
-export default class ProductForm {
-  constructor(productId) {
-    this.productId = productId;
+export default class ProductAddPage {
+  constructor() {
+    this.productId = null;
     this.subElements = {};
+    this.container = null;
     this.element = this.createElement(this.createTemplate());
     this.selectSubElements();
     this.createListeners();
@@ -80,7 +81,8 @@ export default class ProductForm {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render() {
+  async render(container, routeParams) {
+    this.productId = routeParams;
     const url =
       "https://course-js.javascript.ru/api/rest/categories?_sort=weight&_refs=subcategory";
     const response = await fetch(url);
@@ -155,7 +157,11 @@ export default class ProductForm {
 
       this.subElements.imageListContainer.append(sortableList.element);
     }
-    return this.element;
+
+    this.container = container;
+    // console.log(this.container);
+    container.innerHTML = '';
+    container.append(this.element);
   }
   createUrl() {
     const products = "/api/rest/products/";

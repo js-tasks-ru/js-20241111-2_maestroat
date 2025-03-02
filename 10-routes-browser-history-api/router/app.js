@@ -1,5 +1,5 @@
 import Router from "./browser-router.js";
-import { Homepage, ProductsPage, ProductsPageAdd, ProductsPageEdit, Categories, Sales } from "./pages-map.js";
+import { Homepage, Products, ProductsPageAdd, ProductsPageEdit, Categories, Sales } from "./pages-map.js";
 
 const container = document.getElementById('content');
 
@@ -10,7 +10,7 @@ const routes = [
   },
   {
     path: '/products',
-    page: new ProductsPage()
+    page: new Products()
   },
   {
     path: '/products/add',
@@ -18,7 +18,6 @@ const routes = [
   },
   {
     path: /^\/products\/([\w-]+-([\w-]+)?)/i,
-    // path: '/products/102-planset-apple-ipad-2019-32-gb--seryj',
     page: new ProductsPageEdit()
   },
   {

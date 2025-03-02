@@ -100,7 +100,13 @@ export default class CategoriesPage extends SortableList {
     for (let elem of this.data) {
       el.push(this.ulElements(elem));
     }
-    return `<div data-element="categoriesContainer">${el.join("")}</div>`;
+    return `<div class="categories">
+            <div class="content__top-panel">
+              <h1 class="page-title">Категории товаров</h1>
+            </div>
+            <p>Подкатегории можно перетаскивать, меняя их порядок внутри своей категории.</p>
+            <div data-element="categoriesContainer">${el.join("")}</div>
+            </div>`;
   }
   ulElements(elem) {
     const sortableList = new SortableList({

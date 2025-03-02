@@ -1,11 +1,8 @@
 import RangePicker from "./components/range-picker/src/index.js";
-// import SortableTable from "./components/sortable-table/src/index.js";
 import SortableTable from "../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js";
 
 import ColumnChart from "./components/column-chart/src/index.js";
 import header from "./bestsellers-header.js";
-
-import fetchJson from "./utils/fetch-json.js";
 
 const BACKEND_URL = "https://course-js.javascript.ru/";
 

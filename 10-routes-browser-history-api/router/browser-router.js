@@ -38,13 +38,10 @@ export default class Router {
       if (!linkElement) {
         return;
       }
-
       e.preventDefault();
-
       const url = new URL(linkElement.href);
-
       history.pushState(null, undefined, url.pathname);
-
+      
       this.processPath(url.pathname);
     }
 

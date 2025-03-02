@@ -1,124 +1,73 @@
-import { ContentComponent } from "./components.js";
-
+import Page from "../1-dashboard-page/index.js";
+import ProductsPage from "../2-products-page/index.js";
+import CategoriesPage from "../3-categories-page/index.js";
+import ProductAddPage from "../5-product-add-page/index.js";
+import SalesPage from "../4-sales-page/index.js";
 class BasePage {
-  componentMap = {};
-  componentElements = {};
-
+  constructor() {
+    this.content = content;
+    this.page = null;
+    this.element = null;
+    this.routeParams = null;
+  }
   createElement(template) {
     const element = document.createElement("div");
     element.innerHTML = template;
     return element.firstElementChild;
   }
   createTemplate() {
-    return `
-            <div></div>
-        `;
+    return `<div></div>`;
   }
-  selectComponentElements() {
-    const elements = this.element.querySelectorAll("[data-component]");
-
-    for (const element of elements) {
-      const name = element.getAttribute("data-component");
-      this.componentElements[name] = element;
-    }
-  }
-  render(container, routeParams) {
+  async render(container, routeParams) {
     this.element = this.createElement(this.createTemplate());
-    this.selectComponentElements();
-
-    for (const [componentName, componentInstance] of Object.entries(
-      this.componentMap
-    )) {
-      componentInstance.render(
-        this.componentElements[componentName], routeParams
-      );
-    }
-
-    container.appendChild(this.element);
+    this.routeParams = routeParams;
+  
+    const element = await this.page.render();
+  
+    container.innerHTML = '';
+    container.append(element);
   }
   destroy() {
     this.element.remove();
   }
 }
 export class Homepage extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "Homepage" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-                <div data-component="main"></div>
-            </div>
-        `;
+  constructor() {
+    super();
+    this.page = new Page();
   }
 }
-export class ProductsPage extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "ProductsPage" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-                <div data-component="main"></div>
-            </div>
-        `;
+export class Products extends BasePage {
+  constructor() {
+    super();
+    this.page = new ProductsPage();
   }
 }
 export class ProductsPageAdd extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "ProductsPageAdd" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-                <div data-component="main"></div>
-            </div>
-        `;
+  constructor() {
+    super();
+    this.page = new ProductAddPage();
   }
 }
 export class ProductsPageEdit extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "ProductsPageEdit" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-                <div data-component="main"></div>
-            </div>
-        `;
+  constructor() {
+    super();
+    this.page = new ProductAddPage();
+  }
+  async render(container, routeParams) {
+    this.page = new ProductAddPage(routeParams);
+    super.render(container, routeParams);
   }
 }
 export class Categories extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "Categories" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-            <div class="content__top-panel">
-              <h1 class="page-title">Категории товаров</h1>
-            </div>
-            <p>Подкатегории можно перетаскивать, меняя их порядок внутри своей категории.</p>
-                <div data-component="main"></div>
-            </div>
-        `;
+  constructor() {
+    super();
+    this.page = new CategoriesPage();
   }
 }
 export class Sales extends BasePage {
-  componentMap = {
-    main: new ContentComponent({ content: "Sales" }),
-  };
-
-  createTemplate() {
-    return `
-            <div>
-                <div data-component="main"></div>
-            </div>
-        `;
+  constructor() {
+    super();
+    this.page = new SalesPage();
   }
 }

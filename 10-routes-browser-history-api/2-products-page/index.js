@@ -35,8 +35,8 @@ export default class ProductsPage {
             <label class="form-label">Сортировать по:</label>
             <input type="text" data-element="filterName" class="form-control" placeholder="Название товара">
           </div>
-                  <!-- DoubleSlider component -->
-        <div data-element="DoubleSlider"></div>
+            <!-- DoubleSlider component -->
+        <div data-element="DoubleSlider" class="product-slider"></div>
           <div class="form-group">
             <label class="form-label">Статус:</label>
             <select class="form-control" data-element="filterStatus">

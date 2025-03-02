@@ -65,7 +65,9 @@ body {
 .product-form .products-edit__imagelist-item > span > * {
   margin: 0 8px;
 }
-
+.product-slider {
+  flex-grow: 1;
+}
 /* SortableList styles */
 .sortable-list {
   position: relative;
@@ -381,9 +383,13 @@ form .form-buttons {
 }
 
 form.form-inline {
-  display: grid;
+  /* display: grid;
   grid: auto-flow / repeat(auto-fit, minmax(50px, 1fr));
-  grid-gap: 16px;
+  grid-gap: 16px; */
+  display: flex;
+  align-items: center;
+  flex-flow: row wrap;
+  justify-content: space-between; 
 }
 
 form.form-inline .form-group {

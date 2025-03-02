@@ -5,7 +5,8 @@ import header from "./products-header.js";
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
 export default class ProductsPage {
-  constructor() {
+  constructor(container) {
+    this.container = container;
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
     this.selectSubElements();
@@ -16,7 +17,6 @@ export default class ProductsPage {
     };
     this.status = null;
     this.filterName = null;
-    this.container = null;
     this.createListeners();
   }
   createElement(html) {
@@ -59,7 +59,7 @@ export default class ProductsPage {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render(container, routeParams) {
+  async render() {
     this.subElements.DoubleSlider.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
@@ -72,12 +72,11 @@ export default class ProductsPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-    this.container = container;
     // console.log(this.container);
     this.container.innerHTML = '';
     this.container.append(this.element);
   }
-  resetFilters = (e) => {
+  onResetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");
     if (!buttonPlaceholder) {
       return;
@@ -90,7 +89,7 @@ export default class ProductsPage {
     this.subElements.filterName.value = "";
   
     this.dateSelect = false;
-    this.render(this.container);
+    this.render();
   }
   async updateUrl() {
     const url = new URL("api/rest/products?_embed=subcategory.category", BACKEND_URL);
@@ -111,13 +110,13 @@ export default class ProductsPage {
     this.element.addEventListener("range-select", this.onDableSliderDateSelect);
     this.element.addEventListener("change", this.onFormSelect);
     this.element.addEventListener("input", this.onFormSelect);
-    this.element.addEventListener("click", this.resetFilters);
+    this.element.addEventListener("click", this.onResetFilters);
   }
   destroyListeners() {
     this.element.removeEventListener("range-select", this.onDableSliderDateSelect);
     this.element.removeEventListener("change", this.onFormSelect);
     this.element.removeEventListener("input", this.onFormSelect);
-    this.element.removeEventListener("click", this.resetFilters);
+    this.element.removeEventListener("click", this.onResetFilters);
   }
   onDableSliderDateSelect = (e) => {
     this.selectSubElements();
@@ -125,18 +124,17 @@ export default class ProductsPage {
       from: e.detail.from,
       to: e.detail.to,
     };
-
     this.dateSelect = true;
-    this.render(this.container);
-  };
+    this.render();
+  }
   onFormSelect = (e) => {
     e.preventDefault();
     this.selectSubElements();
     this.status = this.subElements.filterStatus.value;
     this.filterName = this.subElements.filterName.value.trim();
     this.dateSelect = true;
-    this.render(this.container);
-  };
+    this.render();
+  }
   remove() {
     this.element.remove();
   }

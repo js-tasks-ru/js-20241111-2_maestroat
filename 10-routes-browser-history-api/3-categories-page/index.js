@@ -4,8 +4,9 @@ const BACKEND_URL = "https://course-js.javascript.ru/";
 import fetchJson from "./utils/fetch-json.js";
 
 export default class CategoriesPage extends SortableList {
-  constructor() {
+  constructor(container) {
     super({items: []});
+    this.container = container;
     this.element = null;
     this.data = null;
     this.url = new URL(
@@ -134,7 +135,7 @@ export default class CategoriesPage extends SortableList {
           </div>
         </div>`;
   }
-  async render(container) {
+  async render() {
     this.data = await this.loadData();
 
     if (!this.data) {
@@ -144,8 +145,9 @@ export default class CategoriesPage extends SortableList {
     this.element = this.createElement(this.template());
     this.selectSubElements();
     this.createListener();
-    container.innerHTML = '';
-    container.append(this.element);
+
+    this.container.innerHTML = '';
+    this.container.append(this.element);
   }
   async loadData() {
     const data = await fetchJson(this.url.toString());

@@ -1,8 +1,8 @@
 export default class Router {
     lastRoute;
 
-    constructor(container, routes) {
-      this.container = container;
+    constructor(routes) {
+      // this.container = container;
       this.routes = routes;
     }
 
@@ -17,7 +17,7 @@ export default class Router {
             this.lastRoute.page.destroy();
           }
           const routeParams = this.extractRouteParams(route, path);
-          route.page.render(this.container, routeParams[0]);
+          route.page.render(routeParams[0]);
           this.lastRoute = route;
         }
       }

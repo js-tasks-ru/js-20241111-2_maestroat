@@ -7,7 +7,8 @@ import header from "./bestsellers-header.js";
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
 export default class Page {
-  constructor() {
+  constructor(container) {
+    this.container = container;
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
     this.selectSubElements();
@@ -53,7 +54,7 @@ export default class Page {
       this.subElements[element.dataset.element] = element;
     });
   }
-  async render(container) {
+  async render() {
     this.subElements.rangePicker.innerHTML = "";
     this.subElements.sortableTable.innerHTML = "";
 
@@ -74,8 +75,8 @@ export default class Page {
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
 
-    container.innerHTML = '';
-    container.append(this.element);
+    this.container.innerHTML = '';
+    this.container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");

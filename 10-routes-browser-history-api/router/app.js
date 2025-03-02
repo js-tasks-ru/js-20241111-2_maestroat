@@ -10,31 +10,31 @@ const container = document.getElementById('content');
 const routes = [
   {
     path: '/',
-    page: new Page()
+    page: new Page(container)
   },
   {
     path: '/products',
-    page: new ProductsPage()
+    page: new ProductsPage(container)
   },
   {
     path: '/products/add',
-    page: new ProductAddPage()
+    page: new ProductAddPage(container)
   },
   {
     path: /^\/products\/([\w-]+-([\w-]+)?)/i,
     // path: '/products/102-planset-apple-ipad-2019-32-gb--seryj',
-    page: new ProductAddPage()
+    page: new ProductAddPage(container)
   },
   {
     path: '/categories',
-    page: new CategoriesPage()
+    page: new CategoriesPage(container)
   },
   {
     path: '/sales',
-    page: new SalesPage()
+    page: new SalesPage(container)
   },
 ];
 
-const router = new Router(container, routes);
+const router = new Router(routes);
 
 router.run();

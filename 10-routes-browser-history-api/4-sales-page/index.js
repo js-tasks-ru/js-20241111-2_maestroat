@@ -5,7 +5,7 @@ import header from "./sales-header.js";
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
 export default class SalesPage {
-  constructor() {
+  constructor(container) {
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
     this.selectSubElements();
@@ -15,7 +15,7 @@ export default class SalesPage {
     };
     this.rangePicker = null;
     this.dateSelect = false;
-    this.container = null;
+    this.container = container;
     this.createListeners();
   }
   createElement(html) {
@@ -54,10 +54,9 @@ export default class SalesPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-    
-    this.container = container;
-    container.innerHTML = '';
-    container.append(this.element);
+
+    this.container.innerHTML = '';
+    this.container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");

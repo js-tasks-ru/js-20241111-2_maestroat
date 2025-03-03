@@ -1,7 +1,7 @@
 export default class SortableTable {
   subElements = {};
-  constructor(config = [], data = []) {
-    this.config = config;
+  constructor(headersConfig = [], data = []) {
+    this.headersConfig = headersConfig;
     this.data = data;
     this.element = this.createElement(this.template());
     this.selectSubElements();
@@ -20,12 +20,12 @@ export default class SortableTable {
   }
 
   createTableHeaderTemplate() {
-    return this.config
+    return this.headersConfig
       .map(
         (columnConfig) =>
           `
           <div class="sortable-table__cell" data-id="${columnConfig["id"]}" data-sortable="${columnConfig["sortable"]}">
-            <span>${columnConfig["id"]}</span>
+            <span>${columnConfig["title"]}</span>
         </div>
         `
       )
@@ -35,7 +35,7 @@ export default class SortableTable {
   createTableBodyCellTemplate(product, columnConfig) {
     const fieldId = columnConfig["id"];
     if (columnConfig["template"]) {
-      return columnConfig["template"](product["images"]);
+      return columnConfig["template"](product[fieldId]);
     } else {
       return `<div class="sortable-table__cell">${product[fieldId]}</div>`;
     }
@@ -44,7 +44,7 @@ export default class SortableTable {
   createTableBodyRowTemplate(product) {
     return `
         <a href="/products/${product["id"]}" class="sortable-table__row">
-            ${this.config
+            ${this.headersConfig
               .map((columnConfig) =>
                 this.createTableBodyCellTemplate(product, columnConfig)
               )
@@ -54,18 +54,21 @@ export default class SortableTable {
   }
 
   createTableBodyTemplate() {
+    if (this.data.length === 0) {
+      return `<div class="sortable-table__empty-placeholder"><p>No products satisfies your filter criteria</p></div>`; // eslint-disable-line
+    }
     return this.data
       .map((product) => this.createTableBodyRowTemplate(product))
       .join("");
   }
 
   sort(fieldValue, orderValue) {
-    this.config.forEach((columnConfig) => {
+    this.headersConfig.forEach((columnConfig) => {
       if (
         fieldValue &&
         columnConfig["sortable"] !== "false" &&
         fieldValue === columnConfig["id"] &&
-        orderValue
+        orderValue && this.data
       ) {
         if (columnConfig["sortType"] === "string") {
           this.data = this.sortString(this.data, fieldValue, orderValue);
@@ -75,7 +78,7 @@ export default class SortableTable {
           }
         }
         this.subElements.body.innerHTML = this.createTableBodyTemplate();
-      }
+      } else {return;}
     });
   }
 

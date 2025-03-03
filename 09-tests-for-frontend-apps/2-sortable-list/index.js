@@ -1,6 +1,7 @@
 export default class SortableList {
-  constructor(items) {
+  constructor({items, elem}) {
     this.items = items;
+    this.elem = elem;
     this.element = this.createElement(this.template());
     this.draggingElem = null;
     this.placeholderElem = null;
@@ -13,18 +14,21 @@ export default class SortableList {
     return div.firstElementChild;
   }
   template() {
-    return `<ul class="sortable-list">${this.liElements()}</ul>`;
+    return `<ul class="sortable-list" ${this.elem?.id ? `data-list="${this.elem.id}"` : ""}>${this.liElements()}</ul>`;
   }
   liElements() {
-    return this.items.items
+    return this.items
       .map(
         (item) =>
-          `<li class="sortable-list__item products-edit__imagelist-item">${item.innerHTML}</li>`
+          `<li class="sortable-list__item products-edit__imagelist-item" ${item.dataset.id ? `data-id="${item.dataset.id}"` : ""} ${item.dataset.grabHandle ? `data-grab-handle=""` : ""}>${item.innerHTML}</li>`
       )
       .join("");
   }
   createListener() {
     this.element.addEventListener("pointerdown", this.onElementMove);
+  }
+  destroyListener() {
+    this.element.removeEventListener("pointerdown", this.onElementMove);
   }
   onElementMove = (event) => {
     let el = event.target.closest(".sortable-list__item");
@@ -56,8 +60,8 @@ export default class SortableList {
     this.element.append(el);
     this.draggingElem = el;
     this.moveDraggingAt(t, i);
-    document.addEventListener("pointermove", this.onDocumentPointerMove);
-    document.addEventListener("pointerup", this.onDocumentPointerUp);
+    this.element.addEventListener("pointermove", this.onDocumentPointerMove);
+    this.element.addEventListener("pointerup", this.onDocumentPointerUp);
   }
   moveDraggingAt(e, t) {
     this.draggingElem.style.left = e - this.pointerInitialShift.x + "px";
@@ -96,15 +100,15 @@ export default class SortableList {
     this.draggingElem.style.top = "";
     this.draggingElem.style.width = "";
     this.draggingElem.style.height = "";
-    document.removeEventListener("pointermove", this.onDocumentPointerMove);
-    document.removeEventListener("pointerup", this.onDocumentPointerUp);
+    this.element.removeEventListener("pointermove", this.onDocumentPointerMove);
+    this.element.removeEventListener("pointerup", this.onDocumentPointerUp);
     this.draggingElem = null;
   }
   remove() {
     this.element.remove();
-    document.removeEventListener("pointerdown", this.onElementMove);
   }
   destroy() {
     this.remove();
+    this.destroyListener();
   }
 }

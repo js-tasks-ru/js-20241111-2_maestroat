@@ -3,10 +3,12 @@
 
 <head>
   <title>Админка для магазина</title>
-  <link rel="apple-touch-icon-precomposed" href="./assets/favicon/apple-touch-icon-precomposed.png">
-  <link rel="icon" href="./assets/favicon/favicon.png">
-  <link rel="stylesheet" href="./styles/all.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon-precomposed" href="/10-routes-browser-history-api/1-dashboard-page/assets/favicon/apple-touch-icon-precomposed.png">
+  <link rel="icon" href="/10-routes-browser-history-api/1-dashboard-page/assets/favicon/favicon.png">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/10-routes-browser-history-api/2-products-page/style-slider.css">
+  <link rel="stylesheet" href="/10-routes-browser-history-api/5-product-add-page/style.css">
+
 </head>
 
 <body>
@@ -53,19 +55,10 @@
 
   </section>
 </main>
-<script type="module">
-  import Page from './index.js';
-
-  const contentNode = document.querySelector('#content');
-
-  async function initialize () {
-    const page = new Page();
-    const element = await page.render();
-
-    contentNode.innerHTML = '';
-    contentNode.append(element);
-  }
-
-  initialize();
+<script src="/10-routes-browser-history-api/router/app.js" type="module"></script>
+<script>
+  document.addEventListener('click', (e) => {
+    e.target.closest('.sidebar__toggler') && document.body.classList.toggle('is-collapsed-sidebar');
+  });
 </script>
 </body>

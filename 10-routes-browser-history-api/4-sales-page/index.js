@@ -16,7 +16,6 @@ export default class SalesPage {
     this.rangePicker = null;
     this.dateSelect = false;
     this.container = container;
-    this.createListeners();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -54,7 +53,7 @@ export default class SalesPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-
+    this.createListeners();
     this.container.innerHTML = '';
     this.container.append(this.element);
   }

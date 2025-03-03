@@ -2,7 +2,6 @@ export default class Router {
     lastRoute;
 
     constructor(routes) {
-      // this.container = container;
       this.routes = routes;
     }
 

@@ -1,16 +1,14 @@
 import RangePicker from "./components/range-picker/src/index.js";
-// import SortableTable from "./components/sortable-table/src/index.js";
 import SortableTable from "../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js";
 
 import ColumnChart from "./components/column-chart/src/index.js";
 import header from "./bestsellers-header.js";
 
-import fetchJson from "./utils/fetch-json.js";
-
 const BACKEND_URL = "https://course-js.javascript.ru/";
 
 export default class Page {
-  constructor() {
+  constructor(container) {
+    this.container = container;
     this.element = this.createElement(this.createTemplate());
     this.subElements = {};
     this.selectSubElements();
@@ -23,7 +21,6 @@ export default class Page {
     this.columnChartSales = this.columnChartSalesCreate();
     this.columnChartCustomers = this.columnChartCustomersCreate();
     this.dateSelect = false;
-    this.createListeners();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -76,8 +73,9 @@ export default class Page {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-
-    return this.element;
+    this.createListeners();
+    this.container.innerHTML = '';
+    this.container.append(this.element);
   }
   resetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");

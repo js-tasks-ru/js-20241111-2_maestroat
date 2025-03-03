@@ -13,7 +13,6 @@ export default class ProductAddPage {
     this.subElements = {};
     this.element = this.createElement(this.createTemplate());
     this.selectSubElements();
-    this.createListeners();
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -157,8 +156,7 @@ export default class ProductAddPage {
 
       this.subElements.imageListContainer.append(sortableList.element);
     }
-
-    // console.log(this.container);
+    this.createListeners();
     this.container.innerHTML = '';
     this.container.append(this.element);
   }

@@ -17,7 +17,7 @@ export default class ProductsPage {
     };
     this.status = null;
     this.filterName = null;
-    this.createListeners();
+    this.blur = false;
   }
   createElement(html) {
     const div = document.createElement("div");
@@ -72,9 +72,11 @@ export default class ProductsPage {
       const url = await this.updateUrl();
       this.subElements.sortableTable.append(this.sortableTableCreate(url).element);
     }
-    // console.log(this.container);
+    this.createListeners();
     this.container.innerHTML = '';
     this.container.append(this.element);
+    
+    this.blur && this.subElements.filterName.focus();
   }
   onResetFilters = (e) => {
     const buttonPlaceholder = e.target.closest(".sortable-table__empty-placeholder");
@@ -111,12 +113,14 @@ export default class ProductsPage {
     this.element.addEventListener("change", this.onFormSelect);
     this.element.addEventListener("input", this.onFormSelect);
     this.element.addEventListener("click", this.onResetFilters);
+    this.subElements.filterName.addEventListener("blur", this.onBlur);
   }
   destroyListeners() {
     this.element.removeEventListener("range-select", this.onDableSliderDateSelect);
     this.element.removeEventListener("change", this.onFormSelect);
     this.element.removeEventListener("input", this.onFormSelect);
     this.element.removeEventListener("click", this.onResetFilters);
+    this.subElements.filterName.removeEventListener("blur", this.onBlur);
   }
   onDableSliderDateSelect = (e) => {
     this.selectSubElements();
@@ -134,6 +138,9 @@ export default class ProductsPage {
     this.filterName = this.subElements.filterName.value.trim();
     this.dateSelect = true;
     this.render();
+  }
+  onBlur = (e) => {
+    this.blur = true;
   }
   remove() {
     this.element.remove();

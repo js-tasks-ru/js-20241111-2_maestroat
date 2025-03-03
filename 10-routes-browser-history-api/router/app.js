@@ -1,5 +1,5 @@
 import Router from "./browser-router.js";
-import Page from "../1-dashboard-page/index.js";
+import Page from "../1-dashboard-page/index-my.js";
 import ProductsPage from "../2-products-page/index.js";
 import ProductAddPage from "../5-product-add-page/index.js";
 import CategoriesPage from "../3-categories-page/index.js";

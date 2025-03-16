@@ -704,10 +704,6 @@ form.form-inline .form-group {
   border-color: var(--blue);
 }
 
-.rangepicker__input:hover {
-
-}
-
 .rangepicker__input > span {
   display: inline-flex;
   margin: 0 4px;

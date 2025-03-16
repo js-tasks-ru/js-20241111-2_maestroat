@@ -10,7 +10,7 @@
     "test:specific": "cross-env NODE_ICU_DATA=node_modules/full-icu jest -t 'intro/sum'",
     "start": "webpack serve --open --mode development",
     "dev": "webpack --mode development",
-    "build": "webpack --mode production"
+    "build": "NODE_ENV=production webpack"
   },
   "repository": {
     "type": "git",

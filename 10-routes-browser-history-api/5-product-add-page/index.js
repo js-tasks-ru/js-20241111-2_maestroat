@@ -73,6 +73,9 @@ export default class ProductAddPage {
         </button>
         </div>
     </form>
+  </div>
+  <div data-element="notification" class="notification notification_error">
+    <div class="notification__content">Error 500: </div>
   </div></div>`;
   }
   selectSubElements() {
@@ -136,17 +139,20 @@ export default class ProductAddPage {
       const sortableList = new SortableList({
         items: product[0].images.map(el => {
           const element = document.createElement('li');
-    
+          
+          const imgGrab = require('../5-product-add-page/icon-grab.svg');
+          const imgDelete = require('../5-product-add-page/icon-trash.svg');
+
           element.innerHTML = `
             <input type="hidden" name="url" value="${el.url}">
         <input type="hidden" name="source" value="${el.source}">
         <span>
-          <img src="/10-routes-browser-history-api/5-product-add-page/icon-grab.svg" data-grab-handle="" alt="grab">
+          <img src="${imgGrab}" data-grab-handle="" alt="grab">
           <img class="sortable-table__cell-img" alt="Image" src="${el.url}">
           <span>${el.source}</span>
         </span>
         <button type="button">
-          <img src="/10-routes-browser-history-api/5-product-add-page/icon-trash.svg" data-delete-handle="" alt="delete">
+          <img src="${imgDelete}" data-delete-handle="" alt="delete">
         </button>
           `;
 
@@ -173,12 +179,20 @@ export default class ProductAddPage {
       "click",
       this.sendImage
     );
+    this.subElements.productForm.elements.save.addEventListener(
+      "click",
+      this.notificationShow
+    );
   }
   destroyListeners() {
     this.subElements.productForm.removeEventListener("submit", this.sendForm);
     this.subElements.productForm.elements.uploadImage.removeEventListener(
       "click",
       this.sendImage
+    );
+    this.subElements.productForm.elements.save.removeEventListener(
+      "click",
+      this.notificationShow
     );
   }
   sendForm = async (e) => {
@@ -281,18 +295,27 @@ export default class ProductAddPage {
     inputElement.click();
   };
   renderImageListItem({ url, source }) {
+    const imgGrab = require('../5-product-add-page/icon-grab.svg');
+    const imgDelete = require('../5-product-add-page/icon-trash.svg');
+
     return `<li class="products-edit__imagelist-item sortable-list__item" style="">
           <input type="hidden" name="url" value="${url}">
           <input type="hidden" name="source" value="${source}">
           <span>
-        <img src="/10-routes-browser-history-api/5-product-add-page/icon-grab.svg" data-grab-handle="" alt="grab">
+        <img src="${imgGrab}" data-grab-handle="" alt="grab">
         <img class="sortable-table__cell-img" alt="Image" src="${url}">
         <span>${source}</span>
       </span>
           <button type="button">
-            <img src="/10-routes-browser-history-api/5-product-add-page/icon-trash.svg" data-delete-handle="" alt="delete">
+            <img src="${imgDelete}" data-delete-handle="" alt="delete">
           </button></li>
         `;
+  }
+  notificationShow = () => {
+    this.subElements.notification.classList.add("show");
+    setTimeout(() => {
+      this.subElements.notification.classList.remove("show");
+    }, 5e3);
   }
   remove() {
     this.element.remove();

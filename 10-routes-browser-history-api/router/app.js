@@ -4,6 +4,9 @@ import ProductsPage from "../2-products-page/index.js";
 import ProductAddPage from "../5-product-add-page/index.js";
 import CategoriesPage from "../3-categories-page/index.js";
 import SalesPage from "../4-sales-page/index.js";
+import "../../styles.css";
+import "../2-products-page/style-slider.css";
+import "../5-product-add-page/style.css";
 
 const container = document.getElementById('content');
 
@@ -11,7 +14,7 @@ const routes = [
   {
     path: '/',
     page: new Page(container)
-  },
+  }, 
   {
     path: '/products',
     page: new ProductsPage(container)

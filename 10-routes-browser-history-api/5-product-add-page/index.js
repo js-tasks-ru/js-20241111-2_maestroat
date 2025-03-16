@@ -179,20 +179,12 @@ export default class ProductAddPage {
       "click",
       this.sendImage
     );
-    this.subElements.productForm.elements.save.addEventListener(
-      "click",
-      this.notificationShow
-    );
   }
   destroyListeners() {
     this.subElements.productForm.removeEventListener("submit", this.sendForm);
     this.subElements.productForm.elements.uploadImage.removeEventListener(
       "click",
       this.sendImage
-    );
-    this.subElements.productForm.elements.save.removeEventListener(
-      "click",
-      this.notificationShow
     );
   }
   sendForm = async (e) => {
@@ -220,6 +212,7 @@ export default class ProductAddPage {
 
     } catch (err) {
       console.log(err);
+      this.notificationShow();
     }
   }
   getFormData() {
@@ -280,6 +273,7 @@ export default class ProductAddPage {
           );
         } catch (err) {
           console.log(err);
+          this.notificationShow();
         } finally {
           // логика для скрытия лоадера
           // логика для добавления изображения в DOM
